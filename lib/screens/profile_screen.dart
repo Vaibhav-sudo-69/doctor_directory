@@ -19,18 +19,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
 
  void logout() async {
-  print("Logout button clicked");
+  await logoutUser();
 
-  currentUser = null;
+  if (!mounted) return;
 
-  await saveUser();
-
-  Navigator.pushAndRemoveUntil(
-    context,
+  Navigator.of(context).pushAndRemoveUntil(
     MaterialPageRoute(
-      builder: (_) => const LoginScreen(),
+      builder: (context) => const LoginScreen(),
     ),
-    (route) => false,
+    (Route<dynamic> route) => false,
   );
 }
 
@@ -125,14 +122,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               width: double.infinity,
 
               child: ElevatedButton.icon(
-
-                onPressed: logout,
-
-                icon: const Icon(Icons.logout),
-
-                label: const Text("LOGOUT"),
-
-              ),
+  onPressed: () {
+    logout();
+  },
+  icon: const Icon(Icons.logout),
+  label: const Text("LOGOUT"),
+),
 
             ),
 
