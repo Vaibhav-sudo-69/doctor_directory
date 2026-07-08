@@ -17,6 +17,7 @@ class DoctorRegisterScreen extends StatefulWidget {
 
 
 
+
 class _DoctorRegisterScreenState
     extends State<DoctorRegisterScreen> {
 
@@ -39,6 +40,19 @@ class _DoctorRegisterScreenState
   final phoneController =
   TextEditingController();
 
+  final qualificationController =
+  TextEditingController();
+
+  final experienceController =
+  TextEditingController();
+
+  final addressController =
+  TextEditingController();
+
+  final timingsController =
+  TextEditingController();
+
+
 
 
 
@@ -51,8 +65,13 @@ class _DoctorRegisterScreenState
         passwordController.text.isEmpty ||
         specializationController.text.isEmpty ||
         clinicController.text.isEmpty ||
-        phoneController.text.isEmpty
+        phoneController.text.isEmpty ||
+        qualificationController.text.isEmpty ||
+        experienceController.text.isEmpty ||
+        addressController.text.isEmpty ||
+        timingsController.text.isEmpty
     ) {
+
 
       ScaffoldMessenger.of(context)
           .showSnackBar(
@@ -75,32 +94,69 @@ class _DoctorRegisterScreenState
 
 
 
+
+
     DoctorRequest request =
     DoctorRequest(
 
-      name: nameController.text,
 
-      email: emailController.text,
+      name:
+      nameController.text,
 
-      password: passwordController.text,
+
+      email:
+      emailController.text,
+
+
+      password:
+      passwordController.text,
+
 
       specialization:
       specializationController.text,
 
+
       clinicName:
       clinicController.text,
+
 
       phoneNumber:
       phoneController.text,
 
+
+      qualification:
+      qualificationController.text,
+
+
+      experience:
+      int.parse(
+        experienceController.text,
+      ),
+
+
+      address:
+      addressController.text,
+
+
+      timings:
+      timingsController.text,
+
+
     );
+
+
+
+
 
 
 
     doctorRequests.add(request);
 
 
+
     await saveDoctorRequests();
+
+
 
 
 
@@ -121,9 +177,16 @@ class _DoctorRegisterScreenState
 
 
 
+
+
+
     Navigator.pop(context);
 
+
   }
+
+
+
 
 
 
@@ -138,31 +201,48 @@ class _DoctorRegisterScreenState
 
       ) {
 
+
     return Padding(
 
       padding:
       const EdgeInsets.only(bottom: 15),
 
 
+
       child: TextField(
 
-        controller: controller,
+
+        controller:
+        controller,
 
 
-        decoration: InputDecoration(
 
-          labelText: text,
+        decoration:
+        InputDecoration(
+
+
+          labelText:
+          text,
+
 
           border:
           const OutlineInputBorder(),
 
+
         ),
+
 
       ),
 
+
     );
 
+
   }
+
+
+
+
 
 
 
@@ -179,12 +259,15 @@ class _DoctorRegisterScreenState
 
       appBar: AppBar(
 
-        title: const Text(
+        title:
+        const Text(
           "Doctor Registration",
         ),
 
+
         backgroundColor:
         Colors.blue,
+
 
         foregroundColor:
         Colors.white,
@@ -196,10 +279,15 @@ class _DoctorRegisterScreenState
 
 
 
+
+
       body: SingleChildScrollView(
+
 
         padding:
         const EdgeInsets.all(20),
+
+
 
 
         child: Column(
@@ -208,10 +296,13 @@ class _DoctorRegisterScreenState
           children: [
 
 
+
+
             input(
               "Doctor Name",
               nameController,
             ),
+
 
 
             input(
@@ -220,10 +311,12 @@ class _DoctorRegisterScreenState
             ),
 
 
+
             input(
               "Password",
               passwordController,
             ),
+
 
 
             input(
@@ -232,10 +325,12 @@ class _DoctorRegisterScreenState
             ),
 
 
+
             input(
               "Clinic Name",
               clinicController,
             ),
+
 
 
             input(
@@ -246,18 +341,55 @@ class _DoctorRegisterScreenState
 
 
 
+            input(
+              "Qualification",
+              qualificationController,
+            ),
+
+
+
+            input(
+              "Experience (Years)",
+              experienceController,
+            ),
+
+
+
+
+            input(
+              "Address",
+              addressController,
+            ),
+
+
+
+
+            input(
+              "Timings",
+              timingsController,
+            ),
+
+
+
+
+
+
 
 
             SizedBox(
 
-              width: double.infinity,
+              width:
+              double.infinity,
+
 
 
               child:
               ElevatedButton(
 
+
                 onPressed:
                 registerDoctor,
+
 
 
                 child:
@@ -267,19 +399,26 @@ class _DoctorRegisterScreenState
 
                 ),
 
+
               ),
 
-            )
+
+            ),
 
 
           ],
 
+
         ),
+
 
       ),
 
+
     );
 
+
   }
+
 
 }

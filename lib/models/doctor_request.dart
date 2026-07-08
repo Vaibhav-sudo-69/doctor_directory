@@ -7,6 +7,11 @@ class DoctorRequest {
   final String clinicName;
   final String phoneNumber;
 
+  final String qualification;
+  final int experience;
+  final String address;
+  final String timings;
+
   String status;
 
 
@@ -19,22 +24,43 @@ class DoctorRequest {
     required this.clinicName,
     required this.phoneNumber,
 
+    required this.qualification,
+    required this.experience,
+    required this.address,
+    required this.timings,
+
     this.status = "Pending",
 
   });
 
 
 
+
+  // SAVE DATA
   Map<String, dynamic> toJson() {
 
     return {
 
       "name": name,
+
       "email": email,
+
       "password": password,
+
       "specialization": specialization,
+
       "clinicName": clinicName,
+
       "phoneNumber": phoneNumber,
+
+      "qualification": qualification,
+
+      "experience": experience,
+
+      "address": address,
+
+      "timings": timings,
+
       "status": status,
 
     };
@@ -44,25 +70,62 @@ class DoctorRequest {
 
 
 
+
+
+  // LOAD DATA
   factory DoctorRequest.fromJson(
       Map<String, dynamic> json,
       ) {
 
     return DoctorRequest(
 
-      name: json["name"],
+      name:
+      json["name"] ?? "",
 
-      email: json["email"],
 
-      password: json["password"],
+      email:
+      json["email"] ?? "",
 
-      specialization: json["specialization"],
 
-      clinicName: json["clinicName"],
+      password:
+      json["password"] ?? "",
 
-      phoneNumber: json["phoneNumber"],
 
-      status: json["status"],
+      specialization:
+      json["specialization"] ?? "",
+
+
+      clinicName:
+      json["clinicName"] ?? "",
+
+
+      phoneNumber:
+      json["phoneNumber"] ?? "",
+
+
+
+      qualification:
+      json["qualification"] ?? "",
+
+
+
+      experience:
+      json["experience"] ?? 0,
+
+
+
+      address:
+      json["address"] ?? "",
+
+
+
+      timings:
+      json["timings"] ?? "",
+
+
+
+      status:
+      json["status"] ?? "Pending",
 
     );
 

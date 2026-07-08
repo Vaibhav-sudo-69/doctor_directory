@@ -1,138 +1,69 @@
-import 'dart:convert';
-
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/doctor.dart';
 
 
-
-List<Doctor> doctors = [
-
-  Doctor(
-
-    name: "Dr. Amit Sharma",
-
-    specialization: "Physician",
-
-    clinicName: "Sharma Clinic",
-
-    phoneNumber: "9876543210",
-
-    address: "Civil Lines, Muzaffarnagar",
-
-    timings: "10:00 AM - 7:00 PM",
-
-    experience: 15,
-
-    qualification: "MBBS, MD",
-
-    image: "assets/doctor.png",
-
-    rating: 4.9,
-
-    reviews: [],
-
-  ),
-
-
-
-  Doctor(
-
-    name: "Dr. Neha Gupta",
-
-    specialization: "Dentist",
-
-    clinicName: "Smile Dental Care",
-
-    phoneNumber: "9876543211",
-
-    address: "Muzaffarnagar",
-
-    timings: "9:00 AM - 6:00 PM",
-
-    experience: 10,
-
-    qualification: "BDS",
-
-    image: "assets/neha.webp",
-
-    rating: 4.9,
-
-    reviews: [],
-
-  ),
-
-];
+List<Doctor> doctors = [];
 
 
 
 
-// SAVE DOCTORS
-Future<void> saveDoctors() async {
+// LOAD DOCTORS FROM FIREBASE
+
+Future<void> loadDoctors() async {
 
 
-  final prefs =
-  await SharedPreferences.getInstance();
+  final snapshot = await FirebaseFirestore
+      .instance
+      .collection("doctors")
+      .get();
 
 
-  List<String> data = doctors.map(
-        (doctor) {
 
-      return jsonEncode(
-        doctor.toJson(),
+  doctors = snapshot.docs.map(
+
+        (doc) {
+
+
+      return Doctor.fromJson(
+
+        doc.data(),
+
       );
 
+
     },
+
   ).toList();
 
-
-
-  await prefs.setStringList(
-
-    "doctors",
-
-    data,
-
-  );
 
 }
 
 
 
 
-// LOAD DOCTORS
-Future<void> loadDoctors() async {
 
 
-  final prefs =
-  await SharedPreferences.getInstance();
+// SAVE DOCTOR TO FIREBASE
+
+Future<void> saveDoctors() async {
 
 
-  final data =
-  prefs.getStringList("doctors");
+  final firestore =
+      FirebaseFirestore.instance;
 
 
 
-  if (data != null) {
+  for (var doctor in doctors) {
 
 
-    doctors = data.map(
+    await firestore
+        .collection("doctors")
+        .add(
 
-          (doctorString) {
+      doctor.toJson(),
 
-
-        return Doctor.fromJson(
-
-          jsonDecode(
-            doctorString,
-          ),
-
-        );
-
-
-      },
-
-    ).toList();
+    );
 
 
   }

@@ -35,7 +35,7 @@ class Doctor {
 
 
 
-  // SAVE DOCTOR
+  // SAVE DOCTOR TO FIREBASE
   Map<String, dynamic> toJson() {
 
     return {
@@ -44,9 +44,9 @@ class Doctor {
 
       "specialization": specialization,
 
-      "clinicName": clinicName,
+      "clinic": clinicName,
 
-      "phoneNumber": phoneNumber,
+      "phone": phoneNumber,
 
       "address": address,
 
@@ -71,40 +71,54 @@ class Doctor {
 
 
 
-  // LOAD DOCTOR
+
+  // GET DOCTOR FROM FIREBASE
   factory Doctor.fromJson(Map<String, dynamic> json) {
 
     return Doctor(
 
-      name: json["name"],
+      name: json["name"] ?? "",
 
-      specialization: json["specialization"],
+      specialization: json["specialization"] ?? "",
 
-      clinicName: json["clinicName"],
 
-      phoneNumber: json["phoneNumber"],
+      // Firebase compatibility
+      clinicName: json["clinicName"]
+          ?? json["clinic"]
+          ?? "",
 
-      address: json["address"],
 
-      timings: json["timings"],
+      phoneNumber: json["phoneNumber"]
+          ?? json["phone"]
+          ?? "",
 
-      experience: json["experience"],
 
-      qualification: json["qualification"],
+      address: json["address"] ?? "",
 
-      image: json["image"],
 
-      rating: json["rating"],
+      timings: json["timings"] ?? "",
 
-      reviews:
-      List<Map<String, dynamic>>.from(
-        json["reviews"],
+
+      experience: json["experience"] ?? 0,
+
+
+      qualification: json["qualification"] ?? "",
+
+
+      image: json["image"] ?? "assets/doctor.png",
+
+
+      rating: (json["rating"] ?? 0).toDouble(),
+
+
+      reviews: List<Map<String, dynamic>>.from(
+        json["reviews"] ?? [],
       ),
 
-      isFavorite: json["isFavorite"],
+
+      isFavorite: json["isFavorite"] ?? false,
 
     );
 
   }
-
 }

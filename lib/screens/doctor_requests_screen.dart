@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../data/doctor_request_data.dart';
 import '../data/doctor_login_data.dart';
@@ -24,6 +25,7 @@ class _DoctorRequestsScreenState
 
 
 
+
   void acceptDoctor(int index) async {
 
 
@@ -31,6 +33,9 @@ class _DoctorRequestsScreenState
     doctorRequests[index];
 
 
+
+
+    // SAVE DOCTOR LOGIN
 
     doctorAccounts.add(
 
@@ -49,6 +54,73 @@ class _DoctorRequestsScreenState
 
 
 
+
+    // SAVE DOCTOR TO FIREBASE
+
+    await FirebaseFirestore.instance
+        .collection("doctors")
+        .add({
+
+
+      "name":
+      request.name,
+
+
+      "email":
+      request.email,
+
+
+      "password":
+      request.password,
+
+
+      "specialization":
+      request.specialization,
+
+
+      "clinic":
+      request.clinicName,
+
+
+      "phone":
+      request.phoneNumber,
+
+
+      "qualification":
+      request.qualification,
+
+
+      "experience":
+      request.experience,
+
+
+      "address":
+      request.address,
+
+
+      "timings":
+      request.timings,
+
+
+      "image":
+      "assets/doctor.png",
+
+
+      "rating":
+      5.0,
+
+
+      "reviews":
+      [],
+
+
+    });
+
+
+
+
+
+
     doctorRequests.removeAt(index);
 
 
@@ -57,8 +129,8 @@ class _DoctorRequestsScreenState
 
 
 
-
     setState(() {});
+
 
 
 
@@ -75,7 +147,11 @@ class _DoctorRequestsScreenState
 
     );
 
+
   }
+
+
+
 
 
 
@@ -97,6 +173,7 @@ class _DoctorRequestsScreenState
 
 
 
+
     ScaffoldMessenger.of(context)
         .showSnackBar(
 
@@ -109,6 +186,7 @@ class _DoctorRequestsScreenState
       ),
 
     );
+
 
   }
 
@@ -129,7 +207,8 @@ class _DoctorRequestsScreenState
 
       appBar: AppBar(
 
-        title: const Text(
+        title:
+        const Text(
           "Doctor Requests",
         ),
 
@@ -146,34 +225,30 @@ class _DoctorRequestsScreenState
 
 
 
-
-
       body: doctorRequests.isEmpty
 
+          ?
 
-          ? const Center(
+      const Center(
 
         child: Text(
-
           "No Doctor Requests",
-
         ),
 
       )
 
+          :
 
-
-
-          : ListView.builder(
+      ListView.builder(
 
 
         itemCount:
         doctorRequests.length,
 
 
-
         itemBuilder:
-            (context, index) {
+            (context,index){
+
 
 
           final doctor =
@@ -184,13 +259,14 @@ class _DoctorRequestsScreenState
 
           return Card(
 
+
             margin:
             const EdgeInsets.all(10),
 
 
 
-            child: ListTile(
 
+            child: ListTile(
 
 
               leading:
@@ -206,43 +282,42 @@ class _DoctorRequestsScreenState
 
 
 
-              title: Text(
-
+              title:
+              Text(
                 doctor.name,
-
               ),
 
 
 
 
-              subtitle: Column(
+              subtitle:
+              Column(
+
 
                 crossAxisAlignment:
                 CrossAxisAlignment.start,
-
 
 
                 children: [
 
 
                   Text(
-
                     doctor.specialization,
-
                   ),
 
 
                   Text(
-
                     doctor.clinicName,
-
                   ),
 
 
                   Text(
-
                     doctor.email,
+                  ),
 
+
+                  Text(
+                    doctor.qualification,
                   ),
 
 
@@ -255,21 +330,22 @@ class _DoctorRequestsScreenState
 
 
 
-              trailing: Row(
+
+
+              trailing:
+              Row(
 
                 mainAxisSize:
                 MainAxisSize.min,
 
 
-
                 children: [
-
-
 
 
                   IconButton(
 
-                    icon: const Icon(
+                    icon:
+                    const Icon(
 
                       Icons.check,
 
@@ -278,14 +354,15 @@ class _DoctorRequestsScreenState
                     ),
 
 
-                    onPressed: () {
+                    onPressed: (){
+
 
                       acceptDoctor(index);
+
 
                     },
 
                   ),
-
 
 
 
@@ -294,7 +371,8 @@ class _DoctorRequestsScreenState
 
                   IconButton(
 
-                    icon: const Icon(
+                    icon:
+                    const Icon(
 
                       Icons.close,
 
@@ -303,14 +381,17 @@ class _DoctorRequestsScreenState
                     ),
 
 
-                    onPressed: () {
+
+                    onPressed: (){
+
 
                       rejectDoctor(index);
 
+
                     },
 
-                  ),
 
+                  ),
 
 
                 ],
@@ -318,13 +399,14 @@ class _DoctorRequestsScreenState
               ),
 
 
-
             ),
+
 
           );
 
 
         },
+
 
       ),
 
@@ -333,5 +415,6 @@ class _DoctorRequestsScreenState
 
 
   }
+
 
 }
