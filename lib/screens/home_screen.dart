@@ -212,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const Text(
 
-              "👋 Hello",
+              "👋 Hello ",
 
 
               style: TextStyle(

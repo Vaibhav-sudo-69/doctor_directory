@@ -18,26 +18,21 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
 
 
-  void logout() async {
+ void logout() async {
+  print("Logout button clicked");
 
-    currentUser = null;
+  currentUser = null;
 
-    await saveUser();
+  await saveUser();
 
-
-    Navigator.pushAndRemoveUntil(
-
-      context,
-
-      MaterialPageRoute(
-        builder: (_) => const LoginScreen(),
-      ),
-
-          (route) => false,
-
-    );
-
-  }
+  Navigator.pushAndRemoveUntil(
+    context,
+    MaterialPageRoute(
+      builder: (_) => const LoginScreen(),
+    ),
+    (route) => false,
+  );
+}
 
 
 
