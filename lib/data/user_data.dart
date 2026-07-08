@@ -10,22 +10,17 @@ User? currentUser;
 
 
 Future<void> saveUser() async {
-
   final prefs = await SharedPreferences.getInstance();
 
+  if (currentUser == null) {
+    await prefs.remove("user");
+    return;
+  }
 
   await prefs.setString(
-
     "user",
-
-    jsonEncode(
-
-      currentUser!.toJson(),
-
-    ),
-
+    jsonEncode(currentUser!.toJson()),
   );
-
 }
 
 
