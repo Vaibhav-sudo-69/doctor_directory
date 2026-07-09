@@ -190,7 +190,6 @@ class _AddDoctorScreenState extends State<AddDoctorScreen> {
 
 
 
-
   @override
   Widget build(BuildContext context) {
 
