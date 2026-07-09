@@ -10,6 +10,7 @@ class DoctorDetailsScreen extends StatefulWidget {
 
   final Doctor doctor;
 
+
   const DoctorDetailsScreen({
     super.key,
     required this.doctor,
@@ -32,46 +33,6 @@ class _DoctorDetailsScreenState
 
 
 
-
-  void openMap() async {
-
-    final Uri url = Uri.parse(
-      "https://www.google.com/maps/search/?api=1&query=${widget.doctor.address}",
-    );
-
-
-    await launchUrl(
-      url,
-      mode: LaunchMode.externalApplication,
-    );
-
-  }
-
-
-
-
-
-
-
-  void callDoctor() async {
-
-    final Uri phone =
-    Uri.parse(
-      "tel:${widget.doctor.phoneNumber}",
-    );
-
-
-    await launchUrl(phone);
-
-  }
-
-
-
-
-
-
-
-
   Widget infoCard({
 
     required IconData icon,
@@ -79,7 +40,7 @@ class _DoctorDetailsScreenState
     required String value,
     Widget? trailing,
 
-  }) {
+  }){
 
 
     return Card(
@@ -121,11 +82,30 @@ class _DoctorDetailsScreenState
 
 
 
+  void openMap() async {
+
+
+    final url = Uri.parse(
+        "https://www.google.com/maps/search/?api=1&query=${widget.doctor.address}"
+    );
+
+
+    await launchUrl(
+      url,
+      mode: LaunchMode.externalApplication,
+    );
+
+  }
 
 
 
 
-  void addReviewDialog() {
+
+
+
+
+
+  void addReviewDialog(){
 
 
     final nameController =
@@ -146,23 +126,20 @@ class _DoctorDetailsScreenState
       context: context,
 
 
-      builder: (context) {
+      builder: (context){
 
 
         return StatefulBuilder(
 
 
-          builder: (context, setDialogState) {
+          builder:(context,setDialogState){
 
 
             return AlertDialog(
 
 
               title:
-              const Text(
-                "Add Review ⭐",
-              ),
-
+              const Text("Add Review ⭐"),
 
 
 
@@ -176,27 +153,17 @@ class _DoctorDetailsScreenState
                 children: [
 
 
-
                   TextField(
 
                     controller:
                     nameController,
 
-
                     decoration:
                     const InputDecoration(
-
-                      labelText:
-                      "Your Name",
-
-                      prefixIcon:
-                      Icon(Icons.person),
-
+                      labelText:"Your Name",
                     ),
 
                   ),
-
-
 
 
 
@@ -206,29 +173,12 @@ class _DoctorDetailsScreenState
                     controller:
                     reviewController,
 
-
                     decoration:
                     const InputDecoration(
-
-                      labelText:
-                      "Write Review",
-
-                      prefixIcon:
-                      Icon(Icons.edit),
-
+                      labelText:"Write Review",
                     ),
 
                   ),
-
-
-
-
-
-
-                  const SizedBox(
-                    height: 15,
-                  ),
-
 
 
 
@@ -242,21 +192,17 @@ class _DoctorDetailsScreenState
 
                     children:
 
-                    List.generate(5, (index) {
+                    List.generate(5,(index){
 
 
                       return IconButton(
-
 
                         icon:
                         Icon(
 
                           index < rating
-
                               ? Icons.star
-
                               : Icons.star_border,
-
 
                           color:
                           Colors.orange,
@@ -264,25 +210,18 @@ class _DoctorDetailsScreenState
                         ),
 
 
+                        onPressed: (){
 
 
-                        onPressed: () {
+                          setDialogState((){
 
-
-                          setDialogState(() {
-
-
-                            rating =
-                                index + 1;
-
+                            rating=index+1;
 
                           });
-
 
                         },
 
                       );
-
 
                     }),
 
@@ -298,124 +237,75 @@ class _DoctorDetailsScreenState
 
 
 
-
               actions: [
 
 
-
                 ElevatedButton(
+
+                  child:
+                  const Text("Submit"),
 
 
                   onPressed: () async {
 
 
-                    if(
-                    nameController.text.isEmpty ||
-                        reviewController.text.isEmpty
-                    ){
-
-
-                      return;
-
-
-                    }
-
-
-
-
-
-                    await FirebaseFirestore
-                        .instance
+                    await FirebaseFirestore.instance
                         .collection("reviews")
                         .add({
-
 
 
                       "doctorEmail":
                       widget.doctor.email,
 
 
-
                       "userName":
-                      nameController.text.trim(),
-
+                      nameController.text,
 
 
                       "reviewText":
-                      reviewController.text.trim(),
-
+                      reviewController.text,
 
 
                       "rating":
                       rating,
 
 
-
-                      "createdAt":
-                      DateTime.now(),
-
-
-
                     });
-
-
-
 
 
 
                     Navigator.pop(context);
 
 
-
                     ScaffoldMessenger.of(context)
                         .showSnackBar(
-
 
                       const SnackBar(
 
                         content:
-                        Text(
-                          "Review Added ⭐",
-                        ),
+                        Text("Review Added ⭐"),
 
                       ),
 
                     );
 
-
                   },
-
-
-
-                  child:
-                  const Text(
-                    "Submit",
-                  ),
 
                 ),
 
-
               ],
-
 
             );
 
-
           },
 
-
         );
-
 
       },
 
     );
 
-
   }
-
-
-
 
 
 
@@ -434,7 +324,6 @@ class _DoctorDetailsScreenState
 
       backgroundColor:
       const Color(0xffF5F7FA),
-
 
 
       appBar:
@@ -458,14 +347,12 @@ class _DoctorDetailsScreenState
 
 
 
-
       body:
       SingleChildScrollView(
 
 
         padding:
         const EdgeInsets.all(20),
-
 
 
         child:
@@ -476,19 +363,41 @@ class _DoctorDetailsScreenState
 
 
 
+            CircleAvatar(
+
+              radius:60,
+
+
+              backgroundImage:
+              AssetImage(
+                widget.doctor.image,
+              ),
+
+            ),
 
 
 
-            infoCard(
 
-              icon:
-              Icons.school,
+            const SizedBox(height:15),
 
-              title:
-              "Qualification",
 
-              value:
-              widget.doctor.qualification,
+
+
+
+            Text(
+
+              widget.doctor.name,
+
+
+              style:
+              const TextStyle(
+
+                fontSize:28,
+
+                fontWeight:
+                FontWeight.bold,
+
+              ),
 
             ),
 
@@ -496,56 +405,60 @@ class _DoctorDetailsScreenState
 
 
 
+            Text(
 
-            infoCard(
-
-              icon:
-              Icons.work,
-
-              title:
-              "Experience",
-
-              value:
-              "${widget.doctor.experience} Years",
-
-            ),
+              widget.doctor.specialization,
 
 
+              style:
+              const TextStyle(
 
+                color:
+                Colors.blue,
 
-
-
-            infoCard(
-
-              icon:
-              Icons.local_hospital,
-
-              title:
-              "Clinic",
-
-              value:
-              widget.doctor.clinicName,
+              ),
 
             ),
 
 
 
 
+            const SizedBox(height:25),
+
+
+
+
+
+
+            infoCard(
+              icon:Icons.school,
+              title:"Qualification",
+              value:widget.doctor.qualification,
+            ),
+
+
+            infoCard(
+              icon:Icons.work,
+              title:"Experience",
+              value:"${widget.doctor.experience} Years",
+            ),
+
+
+            infoCard(
+              icon:Icons.local_hospital,
+              title:"Clinic",
+              value:widget.doctor.clinicName,
+            ),
+
 
 
             infoCard(
 
-              icon:
-              Icons.location_on,
+              icon:Icons.location_on,
 
+              title:"Address",
 
-              title:
-              "Address",
-
-
-              value:
-              widget.doctor.address,
-
+              value:widget.doctor.address,
 
 
               trailing:
@@ -553,14 +466,9 @@ class _DoctorDetailsScreenState
 
                 icon:
                 const Icon(
-
                   Icons.map,
-
-                  color:
-                  Colors.blue,
-
+                  color:Colors.blue,
                 ),
-
 
                 onPressed:
                 openMap,
@@ -571,42 +479,18 @@ class _DoctorDetailsScreenState
 
 
 
-
-
-
             infoCard(
-
-              icon:
-              Icons.access_time,
-
-
-              title:
-              "Timing",
-
-
-              value:
-              widget.doctor.timings,
-
+              icon:Icons.access_time,
+              title:"Timing",
+              value:widget.doctor.timings,
             ),
 
 
 
-
-
-
             infoCard(
-
-              icon:
-              Icons.phone,
-
-
-              title:
-              "Phone",
-
-
-              value:
-              widget.doctor.phoneNumber,
-
+              icon:Icons.phone,
+              title:"Phone",
+              value:widget.doctor.phoneNumber,
             ),
 
 
@@ -617,21 +501,16 @@ class _DoctorDetailsScreenState
 
             ElevatedButton.icon(
 
-
               onPressed:
               addReviewDialog,
 
 
               icon:
-              const Icon(
-                Icons.star,
-              ),
+              const Icon(Icons.star),
 
 
               label:
-              const Text(
-                "ADD REVIEW",
-              ),
+              const Text("ADD REVIEW"),
 
             ),
 
@@ -640,14 +519,7 @@ class _DoctorDetailsScreenState
 
 
 
-
-
-            const SizedBox(
-              height:20,
-            ),
-
-
-
+            const SizedBox(height:20),
 
 
 
@@ -664,20 +536,16 @@ class _DoctorDetailsScreenState
 
                 "Patient Reviews ⭐",
 
-
                 style:
                 TextStyle(
-
                   fontSize:22,
-
-                  fontWeight:
-                  FontWeight.bold,
-
+                  fontWeight:FontWeight.bold,
                 ),
 
               ),
 
             ),
+
 
 
 
@@ -691,42 +559,24 @@ class _DoctorDetailsScreenState
               stream:
 
               FirebaseFirestore.instance
-
                   .collection("reviews")
-
                   .where(
-
                 "doctorEmail",
-
-                isEqualTo:
-                widget.doctor.email,
-
+                isEqualTo: widget.doctor.email,
               )
-
                   .snapshots(),
 
 
 
-
-
-              builder: (context, snapshot) {
+              builder:(context,snapshot){
 
 
 
                 if(!snapshot.hasData){
 
-
-                  return const Center(
-
-                    child:
-                    CircularProgressIndicator(),
-
-                  );
-
+                  return const CircularProgressIndicator();
 
                 }
-
-
 
 
 
@@ -735,43 +585,18 @@ class _DoctorDetailsScreenState
 
 
 
-
-
-                if(reviews.isEmpty){
-
-
-                  return const Text(
-
-                    "No Reviews Yet",
-
-                  );
-
-
-                }
-
-
-
-
-
-
-
                 return ListView.builder(
 
-
-                  shrinkWrap: true,
-
+                  shrinkWrap:true,
 
                   physics:
                   const NeverScrollableScrollPhysics(),
-
 
                   itemCount:
                   reviews.length,
 
 
-
-                  itemBuilder: (context,index){
-
+                  itemBuilder:(context,index){
 
 
                     final data =
@@ -780,64 +605,30 @@ class _DoctorDetailsScreenState
 
 
 
-
                     int rating =
-                        data["rating"] ?? 0;
-
+                    data["rating"];
 
 
 
                     return Card(
 
-
                       color:
                       const Color(0xffFAEEFF),
-
-
-
-                      margin:
-                      const EdgeInsets.only(
-                        bottom: 12,
-                      ),
-
-
 
 
                       child:
                       ListTile(
 
 
-
                         leading:
-                        const Icon(
-
-                          Icons.person,
-
-                          size: 35,
-
-                        ),
-
-
+                        const Icon(Icons.person),
 
 
 
                         title:
                         Text(
-
-                          data["userName"] ?? "User",
-
-
-                          style:
-                          const TextStyle(
-
-                            fontWeight:
-                            FontWeight.bold,
-
-                          ),
-
+                          data["userName"],
                         ),
-
-
 
 
 
@@ -845,13 +636,11 @@ class _DoctorDetailsScreenState
                         subtitle:
                         Column(
 
-
                           crossAxisAlignment:
                           CrossAxisAlignment.start,
 
 
-                          children: [
-
+                          children:[
 
 
 
@@ -859,15 +648,12 @@ class _DoctorDetailsScreenState
 
                               children:
 
-                              List.generate(5,(index){
-
+                              List.generate(5,(i){
 
                                 return Icon(
 
-                                  index < rating
-
+                                  i < rating
                                       ? Icons.star
-
                                       : Icons.star_border,
 
 
@@ -879,57 +665,30 @@ class _DoctorDetailsScreenState
 
                                 );
 
-
                               }),
 
                             ),
 
 
 
-
-
-
-                            const SizedBox(
-                              height:5,
-                            ),
-
-
-
-
-
-
                             Text(
-
-                              data["reviewText"] ?? "",
-
+                              data["reviewText"],
                             ),
-
-
 
 
                           ],
 
                         ),
 
-
-
-
                       ),
-
 
                     );
 
-
-
                   },
-
 
                 );
 
-
-
               },
-
 
             ),
 
@@ -938,13 +697,9 @@ class _DoctorDetailsScreenState
 
 
 
-
-
             SizedBox(
 
-              width:
-              double.infinity,
-
+              width:double.infinity,
 
               child:
               ElevatedButton.icon(
@@ -952,15 +707,22 @@ class _DoctorDetailsScreenState
                 icon:
                 const Icon(Icons.call),
 
-
                 label:
-                const Text(
-                  "CALL NOW",
-                ),
+                const Text("CALL NOW"),
 
 
-                onPressed:
-                callDoctor,
+                onPressed:() async{
+
+
+                  await launchUrl(
+
+                    Uri.parse(
+                        "tel:${widget.doctor.phoneNumber}"
+                    ),
+
+                  );
+
+                },
 
               ),
 
@@ -971,32 +733,21 @@ class _DoctorDetailsScreenState
 
 
 
-
-
             SizedBox(
 
-              width:
-              double.infinity,
-
+              width:double.infinity,
 
               child:
               ElevatedButton.icon(
 
-
                 icon:
-                const Icon(
-                  Icons.calendar_month,
-                ),
-
+                const Icon(Icons.calendar_month),
 
                 label:
-                const Text(
-                  "BOOK APPOINTMENT",
-                ),
+                const Text("BOOK APPOINTMENT"),
 
 
-
-                onPressed: (){
+                onPressed:(){
 
 
                   Navigator.push(
@@ -1005,21 +756,16 @@ class _DoctorDetailsScreenState
 
                     MaterialPageRoute(
 
-                      builder: (_) =>
+                      builder:(_)=>
                           AppointmentScreen(
-
-                            doctor:
-                            widget.doctor,
-
+                            doctor:widget.doctor,
                           ),
 
                     ),
 
                   );
 
-
                 },
-
 
               ),
 
