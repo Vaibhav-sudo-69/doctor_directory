@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../data/doctor_request_data.dart';
-import '../data/doctor_login_data.dart';
-
 
 class DoctorRequestsScreen extends StatefulWidget {
 
@@ -11,8 +8,8 @@ class DoctorRequestsScreen extends StatefulWidget {
 
 
   @override
-  State<DoctorRequestsScreen> createState() =>
-      _DoctorRequestsScreenState();
+  State<DoctorRequestsScreen> createState()
+  => _DoctorRequestsScreenState();
 
 }
 
@@ -25,94 +22,36 @@ class _DoctorRequestsScreenState
 
 
 
-
-  void acceptDoctor(int index) async {
-
-
-    final request =
-    doctorRequests[index];
+  void acceptDoctor(
+      String id,
+      Map<String, dynamic> doctor,
+      ) async {
 
 
-
-
-    // SAVE DOCTOR LOGIN
-
-    doctorAccounts.add(
-
-      DoctorAccount(
-
-        name: request.name,
-
-        email: request.email,
-
-        password: request.password,
-
-      ),
-
-    );
-
-
-
-
-
-    // SAVE DOCTOR TO FIREBASE
-
+    // Add approved doctor
     await FirebaseFirestore.instance
         .collection("doctors")
         .add({
 
+      "name": doctor["name"],
 
-      "name":
-      request.name,
+      "email": doctor["email"],
 
-
-      "email":
-      request.email,
-
-
-      "password":
-      request.password,
-
+      "password": doctor["password"],
 
       "specialization":
-      request.specialization,
+      doctor["specialization"],
 
+      "clinicName":
+      doctor["clinicName"],
 
-      "clinic":
-      request.clinicName,
+      "phoneNumber":
+      doctor["phoneNumber"],
 
+      "rating": 0,
 
-      "phone":
-      request.phoneNumber,
-
-
-      "qualification":
-      request.qualification,
-
-
-      "experience":
-      request.experience,
-
-
-      "address":
-      request.address,
-
-
-      "timings":
-      request.timings,
-
-
-      "image":
-      "assets/doctor.png",
-
-
-      "rating":
-      5.0,
-
-
-      "reviews":
-      [],
-
+      "createdAt":
+      DateTime.now(),
 
     });
 
@@ -120,16 +59,12 @@ class _DoctorRequestsScreenState
 
 
 
+    // Remove request
+    await FirebaseFirestore.instance
+        .collection("doctor_requests")
+        .doc(id)
+        .delete();
 
-    doctorRequests.removeAt(index);
-
-
-
-    await saveDoctorRequests();
-
-
-
-    setState(() {});
 
 
 
@@ -139,9 +74,8 @@ class _DoctorRequestsScreenState
 
       const SnackBar(
 
-        content: Text(
-          "Doctor Approved ✅",
-        ),
+        content:
+        Text("Doctor Approved ✅"),
 
       ),
 
@@ -158,18 +92,13 @@ class _DoctorRequestsScreenState
 
 
 
-  void rejectDoctor(int index) async {
+  void rejectDoctor(String id) async {
 
 
-    doctorRequests.removeAt(index);
-
-
-
-    await saveDoctorRequests();
-
-
-
-    setState(() {});
+    await FirebaseFirestore.instance
+        .collection("doctor_requests")
+        .doc(id)
+        .delete();
 
 
 
@@ -179,9 +108,8 @@ class _DoctorRequestsScreenState
 
       const SnackBar(
 
-        content: Text(
-          "Doctor Rejected ❌",
-        ),
+        content:
+        Text("Doctor Rejected ❌"),
 
       ),
 
@@ -189,6 +117,8 @@ class _DoctorRequestsScreenState
 
 
   }
+
+
 
 
 
@@ -205,7 +135,8 @@ class _DoctorRequestsScreenState
     return Scaffold(
 
 
-      appBar: AppBar(
+      appBar:
+      AppBar(
 
         title:
         const Text(
@@ -225,142 +156,127 @@ class _DoctorRequestsScreenState
 
 
 
-      body: doctorRequests.isEmpty
 
-          ?
-
-      const Center(
-
-        child: Text(
-          "No Doctor Requests",
-        ),
-
-      )
-
-          :
-
-      ListView.builder(
+      body:
+      StreamBuilder<QuerySnapshot>(
 
 
-        itemCount:
-        doctorRequests.length,
-
-
-        itemBuilder:
-            (context,index){
-
-
-
-          final doctor =
-          doctorRequests[index];
+        stream:
+        FirebaseFirestore.instance
+            .collection("doctor_requests")
+            .snapshots(),
 
 
 
 
-          return Card(
+        builder:
+            (context, snapshot) {
 
 
-            margin:
-            const EdgeInsets.all(10),
+          if(snapshot.connectionState
+              ==
+              ConnectionState.waiting) {
 
 
+            return const Center(
+
+              child:
+              CircularProgressIndicator(),
+
+            );
 
 
-            child: ListTile(
-
-
-              leading:
-              const Icon(
-
-                Icons.medical_services,
-
-                color: Colors.blue,
-
-              ),
+          }
 
 
 
 
 
-              title:
+
+          if(!snapshot.hasData ||
+              snapshot.data!.docs.isEmpty) {
+
+
+            return const Center(
+
+              child:
               Text(
-                doctor.name,
+                "No Doctor Requests",
               ),
 
+            );
+
+
+          }
 
 
 
-              subtitle:
-              Column(
 
 
-                crossAxisAlignment:
-                CrossAxisAlignment.start,
 
 
-                children: [
+          final requests =
+              snapshot.data!.docs;
 
 
+
+
+
+          return ListView.builder(
+
+
+            itemCount:
+            requests.length,
+
+
+
+            itemBuilder:
+                (context,index){
+
+
+
+              final doc =
+              requests[index];
+
+
+              final doctor =
+              doc.data()
+              as Map<String,dynamic>;
+
+
+
+
+
+              return Card(
+
+                margin:
+                const EdgeInsets.all(10),
+
+
+
+                child:
+                ListTile(
+
+
+                  leading:
+                  const Icon(
+
+                    Icons.medical_services,
+
+                    color:
+                    Colors.blue,
+
+                  ),
+
+
+
+
+
+
+                  title:
                   Text(
-                    doctor.specialization,
-                  ),
 
-
-                  Text(
-                    doctor.clinicName,
-                  ),
-
-
-                  Text(
-                    doctor.email,
-                  ),
-
-
-                  Text(
-                    doctor.qualification,
-                  ),
-
-
-                ],
-
-              ),
-
-
-
-
-
-
-
-
-              trailing:
-              Row(
-
-                mainAxisSize:
-                MainAxisSize.min,
-
-
-                children: [
-
-
-                  IconButton(
-
-                    icon:
-                    const Icon(
-
-                      Icons.check,
-
-                      color: Colors.green,
-
-                    ),
-
-
-                    onPressed: (){
-
-
-                      acceptDoctor(index);
-
-
-                    },
+                    doctor["name"],
 
                   ),
 
@@ -369,52 +285,144 @@ class _DoctorRequestsScreenState
 
 
 
-                  IconButton(
+                  subtitle:
+                  Column(
 
-                    icon:
-                    const Icon(
-
-                      Icons.close,
-
-                      color: Colors.red,
-
-                    ),
+                    crossAxisAlignment:
+                    CrossAxisAlignment.start,
 
 
-
-                    onPressed: (){
-
-
-                      rejectDoctor(index);
+                    children: [
 
 
-                    },
+                      Text(
+                        doctor["specialization"],
+                      ),
 
+
+                      Text(
+                        doctor["clinicName"],
+                      ),
+
+
+                      Text(
+                        doctor["email"],
+                      ),
+
+
+                    ],
 
                   ),
 
 
-                ],
-
-              ),
 
 
-            ),
 
+
+
+                  trailing:
+                  Row(
+
+                    mainAxisSize:
+                    MainAxisSize.min,
+
+
+                    children: [
+
+
+
+
+
+                      IconButton(
+
+
+                        icon:
+                        const Icon(
+
+                          Icons.check,
+
+                          color:
+                          Colors.green,
+
+                        ),
+
+
+
+                        onPressed: (){
+
+
+                          acceptDoctor(
+
+                            doc.id,
+
+                            doctor,
+
+                          );
+
+
+                        },
+
+                      ),
+
+
+
+
+
+
+
+
+                      IconButton(
+
+
+                        icon:
+                        const Icon(
+
+                          Icons.close,
+
+                          color:
+                          Colors.red,
+
+                        ),
+
+
+
+
+                        onPressed: (){
+
+
+                          rejectDoctor(
+
+                            doc.id,
+
+                          );
+
+
+                        },
+
+                      ),
+
+
+
+                    ],
+
+                  ),
+
+
+                ),
+
+              );
+
+            },
 
           );
 
-
         },
-
 
       ),
 
 
     );
 
-
   }
-
 
 }

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../models/doctor_request.dart';
-import '../data/doctor_request_data.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 class DoctorRegisterScreen extends StatefulWidget {
@@ -10,8 +8,8 @@ class DoctorRegisterScreen extends StatefulWidget {
 
 
   @override
-  State<DoctorRegisterScreen> createState() =>
-      _DoctorRegisterScreenState();
+  State<DoctorRegisterScreen> createState()
+  => _DoctorRegisterScreenState();
 
 }
 
@@ -40,17 +38,6 @@ class _DoctorRegisterScreenState
   final phoneController =
   TextEditingController();
 
-  final qualificationController =
-  TextEditingController();
-
-  final experienceController =
-  TextEditingController();
-
-  final addressController =
-  TextEditingController();
-
-  final timingsController =
-  TextEditingController();
 
 
 
@@ -65,11 +52,7 @@ class _DoctorRegisterScreenState
         passwordController.text.isEmpty ||
         specializationController.text.isEmpty ||
         clinicController.text.isEmpty ||
-        phoneController.text.isEmpty ||
-        qualificationController.text.isEmpty ||
-        experienceController.text.isEmpty ||
-        addressController.text.isEmpty ||
-        timingsController.text.isEmpty
+        phoneController.text.isEmpty
     ) {
 
 
@@ -78,13 +61,15 @@ class _DoctorRegisterScreenState
 
         const SnackBar(
 
-          content: Text(
+          content:
+          Text(
             "Fill all details",
           ),
 
         ),
 
       );
+
 
       return;
 
@@ -94,55 +79,51 @@ class _DoctorRegisterScreenState
 
 
 
+    try {
 
 
-    DoctorRequest request =
-    DoctorRequest(
+      await FirebaseFirestore.instance
+          .collection("doctor_requests")
+          .add(
+
+        {
 
 
-      name:
-      nameController.text,
+          "name":
+          nameController.text.trim(),
 
 
-      email:
-      emailController.text,
+          "email":
+          emailController.text.trim(),
 
 
-      password:
-      passwordController.text,
+          "password":
+          passwordController.text.trim(),
 
 
-      specialization:
-      specializationController.text,
+          "specialization":
+          specializationController.text.trim(),
 
 
-      clinicName:
-      clinicController.text,
+          "clinicName":
+          clinicController.text.trim(),
 
 
-      phoneNumber:
-      phoneController.text,
+          "phoneNumber":
+          phoneController.text.trim(),
 
 
-      qualification:
-      qualificationController.text,
+          "status":
+          "Pending",
 
 
-      experience:
-      int.parse(
-        experienceController.text,
-      ),
+          "createdAt":
+          DateTime.now(),
 
 
-      address:
-      addressController.text,
+        },
 
-
-      timings:
-      timingsController.text,
-
-
-    );
+      );
 
 
 
@@ -150,37 +131,53 @@ class _DoctorRegisterScreenState
 
 
 
-    doctorRequests.add(request);
 
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
 
+        const SnackBar(
 
-    await saveDoctorRequests();
+          content:
+          Text(
 
+            "Request sent to Admin ✅",
 
-
-
-
-    ScaffoldMessenger.of(context)
-        .showSnackBar(
-
-      const SnackBar(
-
-        content: Text(
-
-          "Request sent to Admin ✅",
+          ),
 
         ),
 
-      ),
-
-    );
+      );
 
 
 
+      Navigator.pop(context);
 
 
 
-    Navigator.pop(context);
+    }
+
+
+    catch (e) {
+
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+
+        SnackBar(
+
+          content:
+          Text(
+
+            e.toString(),
+
+          ),
+
+        ),
+
+      );
+
+
+    }
 
 
   }
@@ -205,16 +202,17 @@ class _DoctorRegisterScreenState
     return Padding(
 
       padding:
-      const EdgeInsets.only(bottom: 15),
+      const EdgeInsets.only(
+        bottom: 15,
+      ),
 
 
-
-      child: TextField(
+      child:
+      TextField(
 
 
         controller:
         controller,
-
 
 
         decoration:
@@ -231,16 +229,11 @@ class _DoctorRegisterScreenState
 
         ),
 
-
       ),
-
 
     );
 
-
   }
-
-
 
 
 
@@ -257,11 +250,15 @@ class _DoctorRegisterScreenState
     return Scaffold(
 
 
-      appBar: AppBar(
+      appBar:
+      AppBar(
+
 
         title:
         const Text(
+
           "Doctor Registration",
+
         ),
 
 
@@ -272,6 +269,7 @@ class _DoctorRegisterScreenState
         foregroundColor:
         Colors.white,
 
+
       ),
 
 
@@ -281,16 +279,16 @@ class _DoctorRegisterScreenState
 
 
 
-      body: SingleChildScrollView(
+      body:
+      SingleChildScrollView(
 
 
         padding:
         const EdgeInsets.all(20),
 
 
-
-
-        child: Column(
+        child:
+        Column(
 
 
           children: [
@@ -298,77 +296,80 @@ class _DoctorRegisterScreenState
 
 
 
+
             input(
+
               "Doctor Name",
+
               nameController,
+
             ),
 
 
 
+
+
             input(
+
               "Email",
+
               emailController,
+
             ),
 
 
 
+
+
+
             input(
+
               "Password",
+
               passwordController,
+
             ),
 
 
 
+
+
+
             input(
+
               "Specialization",
+
               specializationController,
+
             ),
 
 
 
+
+
+
+
             input(
+
               "Clinic Name",
+
               clinicController,
+
             ),
 
 
 
+
+
+
+
             input(
+
               "Phone Number",
+
               phoneController,
+
             ),
-
-
-
-
-            input(
-              "Qualification",
-              qualificationController,
-            ),
-
-
-
-            input(
-              "Experience (Years)",
-              experienceController,
-            ),
-
-
-
-
-            input(
-              "Address",
-              addressController,
-            ),
-
-
-
-
-            input(
-              "Timings",
-              timingsController,
-            ),
-
 
 
 
@@ -378,9 +379,9 @@ class _DoctorRegisterScreenState
 
             SizedBox(
 
+
               width:
               double.infinity,
-
 
 
               child:
@@ -389,7 +390,6 @@ class _DoctorRegisterScreenState
 
                 onPressed:
                 registerDoctor,
-
 
 
                 child:
@@ -402,23 +402,17 @@ class _DoctorRegisterScreenState
 
               ),
 
-
             ),
 
 
           ],
 
-
         ),
-
 
       ),
 
-
     );
 
-
   }
-
 
 }

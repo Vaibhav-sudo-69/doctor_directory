@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-
-import '../data/doctor_login_data.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'doctor_panel_screen.dart';
 import 'doctor_register_screen.dart';
+
 
 
 class DoctorLoginScreen extends StatefulWidget {
@@ -12,8 +12,8 @@ class DoctorLoginScreen extends StatefulWidget {
 
 
   @override
-  State<DoctorLoginScreen> createState() =>
-      _DoctorLoginScreenState();
+  State<DoctorLoginScreen> createState()
+  => _DoctorLoginScreenState();
 
 }
 
@@ -33,63 +33,176 @@ class _DoctorLoginScreenState
 
 
 
-
-
-  void loginDoctor() {
-
-
-    for (var doctor in doctorAccounts) {
-
-
-      if (doctor.email ==
-          emailController.text &&
-
-          doctor.password ==
-              passwordController.text) {
-
-
-        currentDoctor = doctor;
+  bool loading = false;
 
 
 
-        Navigator.pushReplacement(
-
-          context,
-
-          MaterialPageRoute(
-
-            builder: (_) =>
-            const DoctorPanelScreen(),
-
-          ),
-
-        );
 
 
-        return;
 
-      }
+
+  void loginDoctor() async {
+
+
+    if(
+    emailController.text.isEmpty ||
+        passwordController.text.isEmpty
+    ){
+
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+
+        const SnackBar(
+
+          content:
+          Text("Enter all details"),
+
+        ),
+
+      );
+
+
+      return;
 
     }
 
 
 
 
-    ScaffoldMessenger.of(context).showSnackBar(
 
-      const SnackBar(
 
-        content: Text(
+    setState(() {
 
-          "Invalid Doctor Login",
+      loading = true;
+
+    });
+
+
+
+
+
+
+    final result =
+    await FirebaseFirestore.instance
+        .collection("doctors")
+        .where(
+
+      "email",
+
+      isEqualTo:
+      emailController.text.trim(),
+
+    )
+        .where(
+
+      "password",
+
+      isEqualTo:
+      passwordController.text.trim(),
+
+    )
+        .get();
+
+
+
+
+
+
+
+    setState(() {
+
+      loading = false;
+
+    });
+
+
+
+
+
+
+
+
+    if(result.docs.isNotEmpty){
+
+
+
+      Navigator.pushReplacement(
+
+        context,
+
+        MaterialPageRoute(
+
+          builder: (_) =>
+
+              DoctorPanelScreen(
+
+                doctorId:
+                result.docs.first.id,
+
+
+                doctorData:
+                result.docs.first.data(),
+
+              ),
 
         ),
 
-      ),
+      );
 
-    );
+
+
+
+
+
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+
+        const SnackBar(
+
+          content:
+          Text(
+              "Doctor Login Successful ✅"
+          ),
+
+        ),
+
+      );
+
+
+
+    }
+
+
+
+
+
+
+    else{
+
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+
+        const SnackBar(
+
+          content:
+          Text(
+              "Invalid Doctor Login ❌"
+          ),
+
+        ),
+
+      );
+
+
+    }
+
+
 
   }
+
 
 
 
@@ -105,18 +218,21 @@ class _DoctorLoginScreenState
     return Scaffold(
 
 
-      appBar: AppBar(
+      appBar:
+      AppBar(
 
-        title: const Text(
-
-          "Doctor Login",
-
+        title:
+        const Text(
+            "Doctor Login"
         ),
 
 
-        backgroundColor: Colors.blue,
+        backgroundColor:
+        Colors.blue,
 
-        foregroundColor: Colors.white,
+
+        foregroundColor:
+        Colors.white,
 
       ),
 
@@ -127,14 +243,16 @@ class _DoctorLoginScreenState
 
 
 
-      body: Padding(
+      body:
+      Padding(
 
         padding:
         const EdgeInsets.all(20),
 
 
 
-        child: Column(
+        child:
+        Column(
 
 
           mainAxisAlignment:
@@ -152,9 +270,10 @@ class _DoctorLoginScreenState
 
               Icons.medical_services,
 
-              size: 80,
+              size:80,
 
-              color: Colors.blue,
+              color:
+              Colors.blue,
 
             ),
 
@@ -164,8 +283,9 @@ class _DoctorLoginScreenState
 
 
             const SizedBox(
-              height: 30,
+              height:30,
             ),
+
 
 
 
@@ -197,8 +317,9 @@ class _DoctorLoginScreenState
 
 
 
+
             const SizedBox(
-              height: 15,
+              height:15,
             ),
 
 
@@ -236,9 +357,11 @@ class _DoctorLoginScreenState
 
 
 
+
             const SizedBox(
-              height: 25,
+              height:25,
             ),
+
 
 
 
@@ -256,16 +379,29 @@ class _DoctorLoginScreenState
               child:
               ElevatedButton(
 
+
                 onPressed:
-                loginDoctor,
+                loading
+                    ? null
+                    : loginDoctor,
+
 
 
                 child:
+                loading
+
+                    ?
+
+                const CircularProgressIndicator()
+
+
+                    :
+
+
                 const Text(
-
-                  "DOCTOR LOGIN",
-
+                    "DOCTOR LOGIN"
                 ),
+
 
               ),
 
@@ -278,8 +414,9 @@ class _DoctorLoginScreenState
 
 
 
+
             const SizedBox(
-              height: 15,
+              height:15,
             ),
 
 
@@ -288,12 +425,10 @@ class _DoctorLoginScreenState
 
 
 
-
-            // NEW DOCTOR REGISTER BUTTON
-
             TextButton(
 
-              onPressed: () {
+
+              onPressed: (){
 
 
                 Navigator.push(
@@ -315,7 +450,8 @@ class _DoctorLoginScreenState
 
 
 
-              child: const Text(
+              child:
+              const Text(
 
                 "New Doctor? Register 👨‍⚕️",
 
@@ -326,17 +462,17 @@ class _DoctorLoginScreenState
 
 
 
-
-
           ],
 
         ),
 
       ),
 
+
     );
 
 
   }
+
 
 }

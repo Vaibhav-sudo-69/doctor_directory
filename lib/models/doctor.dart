@@ -1,10 +1,12 @@
 class Doctor {
 
   final String name;
+  final String email;
   final String specialization;
   final String clinicName;
   final String phoneNumber;
   final String address;
+  final String location;   // 📍 GOOGLE MAP LINK
   final String timings;
   final int experience;
   final String qualification;
@@ -18,10 +20,12 @@ class Doctor {
   Doctor({
 
     required this.name,
+    required this.email,
     required this.specialization,
     required this.clinicName,
     required this.phoneNumber,
     required this.address,
+    required this.location,
     required this.timings,
     required this.experience,
     required this.qualification,
@@ -35,20 +39,28 @@ class Doctor {
 
 
 
+
+
+
   // SAVE DOCTOR TO FIREBASE
+
   Map<String, dynamic> toJson() {
 
     return {
 
       "name": name,
 
+      "email": email,
+
       "specialization": specialization,
 
-      "clinic": clinicName,
+      "clinicName": clinicName,
 
-      "phone": phoneNumber,
+      "phoneNumber": phoneNumber,
 
       "address": address,
+
+      "location": location,
 
       "timings": timings,
 
@@ -72,53 +84,128 @@ class Doctor {
 
 
 
+
+
   // GET DOCTOR FROM FIREBASE
-  factory Doctor.fromJson(Map<String, dynamic> json) {
+
+  factory Doctor.fromJson(
+      Map<String, dynamic> json,
+      ) {
+
 
     return Doctor(
 
-      name: json["name"] ?? "",
-
-      specialization: json["specialization"] ?? "",
-
-
-      // Firebase compatibility
-      clinicName: json["clinicName"]
-          ?? json["clinic"]
-          ?? "",
+      name:
+      json["name"] ?? "",
 
 
-      phoneNumber: json["phoneNumber"]
-          ?? json["phone"]
-          ?? "",
+      email:
+      json["email"] ?? "",
 
 
-      address: json["address"] ?? "",
+      specialization:
+      json["specialization"] ?? "",
 
 
-      timings: json["timings"] ?? "",
+
+      clinicName:
+
+      json["clinicName"]
+          ??
+          json["clinic"]
+          ??
+          "",
 
 
-      experience: json["experience"] ?? 0,
+
+      phoneNumber:
+
+      json["phoneNumber"]
+          ??
+          json["phone"]
+          ??
+          "",
 
 
-      qualification: json["qualification"] ?? "",
+
+      address:
+
+      json["address"]
+          ??
+          "",
 
 
-      image: json["image"] ?? "assets/doctor.png",
+
+      location:
+
+      json["location"]
+          ??
+          "",
 
 
-      rating: (json["rating"] ?? 0).toDouble(),
+
+      timings:
+
+      json["timings"]
+          ??
+          "",
 
 
-      reviews: List<Map<String, dynamic>>.from(
-        json["reviews"] ?? [],
+
+      experience:
+
+      json["experience"]
+          ??
+          0,
+
+
+
+      qualification:
+
+      json["qualification"]
+          ??
+          "",
+
+
+
+      image:
+
+      json["image"]
+          ??
+          "assets/doctor.png",
+
+
+
+      rating:
+
+      (json["rating"] ?? 0)
+          .toDouble(),
+
+
+
+      reviews:
+
+      List<Map<String, dynamic>>
+          .from(
+
+        json["reviews"]
+            ??
+            [],
+
       ),
 
 
-      isFavorite: json["isFavorite"] ?? false,
+
+      isFavorite:
+
+      json["isFavorite"]
+          ??
+          false,
+
 
     );
 
   }
+
+
 }

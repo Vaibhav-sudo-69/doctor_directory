@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/doctor.dart';
+
 import '../widgets/search_bar_widgets.dart';
 import '../widgets/doctor_card.dart';
 import '../widgets/category_chip.dart';
@@ -17,7 +18,8 @@ class HomeScreen extends StatefulWidget {
 
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<HomeScreen> createState() =>
+      _HomeScreenState();
 
 }
 
@@ -31,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
   String searchText = "";
+
 
 
   final List<String> categories = [
@@ -48,15 +51,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
 
+
   void searchDoctor(String value) {
 
     setState(() {
 
-      searchText = value.toLowerCase();
+      searchText =
+          value.toLowerCase();
 
     });
 
   }
+
 
 
 
@@ -69,62 +75,38 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
 
 
-      backgroundColor: const Color(0xffF5F7FA),
+      backgroundColor:
+      const Color(0xffF5F7FA),
 
 
 
-      appBar: AppBar(
+      appBar:
+      AppBar(
 
 
-        elevation: 0,
-
-
-        backgroundColor: Colors.blue,
-
-
-        foregroundColor: Colors.white,
-
-
-        title: const Text(
-
+        title:
+        const Text(
           "City Doctor Directory",
-
         ),
+
+
+        backgroundColor:
+        Colors.blue,
+
+
+        foregroundColor:
+        Colors.white,
 
 
 
         actions: [
 
 
-          IconButton(
-
-            icon: const Icon(Icons.person),
-
-            onPressed: () {
-
-              Navigator.push(
-
-                context,
-
-                MaterialPageRoute(
-
-                  builder: (_) => const ProfileScreen(),
-
-                ),
-
-              );
-
-            },
-
-          ),
-
-
-
-
 
           IconButton(
 
-            icon: const Icon(Icons.favorite),
+            icon:
+            const Icon(Icons.person),
 
 
             onPressed: () {
@@ -134,42 +116,87 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 context,
 
-                MaterialPageRoute(
-
-                  builder: (_) => FavoriteScreen(
-
-                    favoriteDoctors: const [],
-
-                  ),
-
-                ),
-
-              );
-
-
-            },
-
-          ),
-
-
-
-
-
-          IconButton(
-
-            icon: const Icon(Icons.calendar_month),
-
-
-            onPressed: () {
-
-
-              Navigator.push(
-
-                context,
 
                 MaterialPageRoute(
 
                   builder: (_) =>
+                  const ProfileScreen(),
+
+                ),
+
+              );
+
+
+            },
+
+          ),
+
+
+
+
+
+
+
+
+          // FAVORITE SCREEN FIXED ❤️
+
+          IconButton(
+
+            icon:
+            const Icon(Icons.favorite),
+
+
+            onPressed: () {
+
+
+              Navigator.push(
+
+                context,
+
+
+                MaterialPageRoute(
+
+                  builder: (_) =>
+
+                  const FavoriteScreen(),
+
+                ),
+
+              );
+
+
+            },
+
+          ),
+
+
+
+
+
+
+
+
+
+          IconButton(
+
+            icon:
+            const Icon(
+                Icons.calendar_month
+            ),
+
+
+            onPressed: () {
+
+
+              Navigator.push(
+
+                context,
+
+
+                MaterialPageRoute(
+
+                  builder: (_) =>
+
                   const MyAppointmentsScreen(),
 
                 ),
@@ -182,7 +209,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
 
 
-
         ],
 
       ),
@@ -192,17 +218,23 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
 
-      body: Padding(
+
+      body:
+      Padding(
 
 
-        padding: const EdgeInsets.all(16),
+        padding:
+        const EdgeInsets.all(16),
 
 
 
-        child: Column(
+        child:
+        Column(
 
 
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment:
+          CrossAxisAlignment.start,
+
 
 
           children: [
@@ -212,14 +244,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const Text(
 
-              "👋 Hello ",
+              "👋 Hello",
 
 
-              style: TextStyle(
+              style:
+              TextStyle(
 
                 fontSize: 28,
 
-                fontWeight: FontWeight.bold,
+                fontWeight:
+                FontWeight.bold,
 
               ),
 
@@ -228,21 +262,33 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
 
-            const SizedBox(height: 20),
+
+            const SizedBox(
+              height:20,
+            ),
+
+
 
 
 
 
             SearchBarWidget(
 
-              onChanged: searchDoctor,
+              onChanged:
+              searchDoctor,
 
             ),
 
 
 
 
-            const SizedBox(height: 15),
+
+
+            const SizedBox(
+              height:15,
+            ),
+
+
 
 
 
@@ -250,44 +296,51 @@ class _HomeScreenState extends State<HomeScreen> {
 
             SizedBox(
 
-
-              height: 50,
-
-
-              child: ListView.builder(
+              height:50,
 
 
-                scrollDirection: Axis.horizontal,
+              child:
+              ListView.builder(
 
 
-                itemCount: categories.length,
+                scrollDirection:
+                Axis.horizontal,
 
 
-                itemBuilder: (context, index) {
+                itemCount:
+                categories.length,
 
 
-                  final category = categories[index];
+                itemBuilder:
+                    (context,index){
+
+
+
+                  final category =
+                  categories[index];
 
 
 
                   return CategoryChip(
 
 
-                    text: category,
+                    text:
+                    category,
 
 
                     isSelected:
-
                     selectedCategory == category,
 
 
-                    onTap: () {
+
+                    onTap: (){
 
 
-                      setState(() {
+                      setState((){
 
 
-                        selectedCategory = category;
+                        selectedCategory =
+                            category;
 
 
                       });
@@ -301,6 +354,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 },
 
+
               ),
 
             ),
@@ -310,7 +364,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
 
-            const SizedBox(height: 20),
+
+            const SizedBox(
+              height:20,
+            ),
+
+
 
 
 
@@ -320,10 +379,14 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
 
 
-              child: StreamBuilder(
+              child:
+              StreamBuilder<QuerySnapshot>(
 
 
-                stream: FirebaseFirestore.instance
+
+                stream:
+
+                FirebaseFirestore.instance
 
                     .collection("doctors")
 
@@ -332,16 +395,20 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
 
-                builder: (context, snapshot) {
+                builder:
+                    (context,snapshot){
 
 
 
-                  if (!snapshot.hasData) {
+                  if(snapshot.connectionState
+                      ==
+                      ConnectionState.waiting){
 
 
                     return const Center(
 
-                      child: CircularProgressIndicator(),
+                      child:
+                      CircularProgressIndicator(),
 
                     );
 
@@ -351,84 +418,46 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
 
-                  final firebaseDoctors = snapshot.data!.docs;
 
 
+                  if(!snapshot.hasData){
 
 
-                  List<Doctor> doctors = firebaseDoctors.map((doc) {
+                    return const Center(
 
-
-                    final data = doc.data();
-
-
-
-                    return Doctor(
-
-
-                      name: data["name"] ?? "",
-
-
-                      specialization:
-
-                      data["specialization"] ?? "",
-
-
-
-                      clinicName:
-
-                      data["clinic"] ?? "",
-
-
-
-                      phoneNumber:
-
-                      data["phone"] ?? "",
-
-
-
-                      address:
-
-                      data["address"] ?? "",
-
-
-
-                      timings:
-
-                      data["timings"] ?? "",
-
-
-
-                      experience:
-
-                      data["experience"] ?? 0,
-
-
-
-                      qualification:
-
-                      data["qualification"] ?? "",
-
-
-
-                      image:
-
-                      data["image"] ?? "",
-
-
-
-                      rating:
-
-                      (data["rating"] ?? 0).toDouble(),
-
-
-
-                      reviews: [],
-
+                      child:
+                      Text("No Doctors Found"),
 
                     );
 
 
+                  }
+
+
+
+
+
+
+
+
+
+                  List<Doctor> doctors =
+
+
+                  snapshot.data!.docs.map((doc){
+
+
+
+                    final data =
+                    doc.data()
+                    as Map<String,dynamic>;
+
+
+
+                    return Doctor.fromJson(data);
+
+
+
                   }).toList();
 
 
@@ -437,41 +466,52 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
 
-                  doctors = doctors.where((doctor) {
+
+                  doctors =
+                      doctors.where((doctor){
 
 
 
-                    bool matchSearch =
+                        bool matchSearch =
 
-                    doctor.name
+                        doctor.name
 
-                        .toLowerCase()
+                            .toLowerCase()
 
-                        .contains(searchText);
-
-
-
-
-
-                    bool matchCategory =
-
-                        selectedCategory == "All" ||
-
-                            doctor.specialization
-
-                                .toLowerCase()
-
-                                ==
-
-                                selectedCategory.toLowerCase();
+                            .contains(searchText);
 
 
 
 
-                    return matchSearch && matchCategory;
 
 
-                  }).toList();
+                        bool matchCategory =
+
+                            selectedCategory == "All"
+
+                                ||
+
+                                doctor.specialization
+                                    .toLowerCase()
+
+                                    ==
+
+                                    selectedCategory
+                                        .toLowerCase();
+
+
+
+
+
+
+                        return
+
+                          matchSearch &&
+                              matchCategory;
+
+
+                      }).toList();
+
 
 
 
@@ -482,15 +522,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   return ListView.builder(
 
 
-                    itemCount: doctors.length,
+                    itemCount:
+                    doctors.length,
 
 
-                    itemBuilder: (context, index) {
+
+                    itemBuilder:
+                        (context,index){
+
 
 
                       return DoctorCard(
 
-                        doctor: doctors[index],
+                        doctor:
+                        doctors[index],
 
                       );
 
@@ -500,12 +545,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
 
 
+
                 },
+
 
               ),
 
             ),
-
 
 
           ],
@@ -517,6 +563,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
     );
 
+
   }
+
 
 }

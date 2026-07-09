@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/doctor.dart';
-import '../models/review.dart';
-import '../data/review_data.dart';
 import 'appointment_screen.dart';
 
 
@@ -16,223 +15,34 @@ class DoctorDetailsScreen extends StatefulWidget {
     required this.doctor,
   });
 
+
   @override
-  State<DoctorDetailsScreen> createState() =>
-      _DoctorDetailsScreenState();
+  State<DoctorDetailsScreen> createState()
+  => _DoctorDetailsScreenState();
+
 }
+
+
+
 
 
 class _DoctorDetailsScreenState
     extends State<DoctorDetailsScreen> {
 
 
-  int selectedRating = 5;
 
 
-  void addReviewDialog() {
 
-    final nameController =
-    TextEditingController();
+  void openMap() async {
 
-    final reviewController =
-    TextEditingController();
+    final Uri url = Uri.parse(
+      "https://www.google.com/maps/search/?api=1&query=${widget.doctor.address}",
+    );
 
 
-    showDialog(
-
-      context: context,
-
-      builder: (context) {
-
-        return StatefulBuilder(
-
-          builder: (context, setDialogState) {
-
-            return AlertDialog(
-
-              title: const Text(
-                "Add Review ⭐",
-              ),
-
-
-              content: Column(
-
-                mainAxisSize:
-                MainAxisSize.min,
-
-
-                children: [
-
-
-                  TextField(
-
-                    controller:
-                    nameController,
-
-                    decoration:
-                    const InputDecoration(
-
-                      labelText:
-                      "Your Name",
-
-                    ),
-
-                  ),
-
-
-
-                  TextField(
-
-                    controller:
-                    reviewController,
-
-                    decoration:
-                    const InputDecoration(
-
-                      labelText:
-                      "Review",
-
-                    ),
-
-                  ),
-
-
-
-                  const SizedBox(
-                    height: 15,
-                  ),
-
-
-
-                  Row(
-
-                    mainAxisAlignment:
-                    MainAxisAlignment.center,
-
-
-                    children:
-
-                    List.generate(
-
-                      5,
-
-                          (index) {
-
-                        return IconButton(
-
-                          onPressed: () {
-
-                            setDialogState(() {
-
-                              selectedRating =
-                                  index + 1;
-
-                            });
-
-                          },
-
-
-                          icon: Icon(
-
-                            index <
-                                selectedRating
-
-                                ? Icons.star
-
-                                : Icons.star_border,
-
-
-                            color:
-                            Colors.orange,
-
-                          ),
-
-                        );
-
-                      },
-
-                    ),
-
-                  )
-
-                ],
-
-              ),
-
-
-
-              actions: [
-
-
-                ElevatedButton(
-
-                  onPressed: () async {
-
-
-                    if(
-                    nameController.text.isEmpty ||
-                        reviewController.text.isEmpty
-                    ){
-
-                      return;
-
-                    }
-
-
-
-                    reviews.add(
-
-                      Review(
-
-                        doctorName:
-                        widget.doctor.name,
-
-
-                        userName:
-                        nameController.text,
-
-
-                        reviewText:
-                        reviewController.text,
-
-
-                        rating:
-                        selectedRating.toDouble(),
-
-                      ),
-
-                    );
-
-
-
-                    await saveReviews();
-
-
-                    setState(() {});
-
-
-                    Navigator.pop(context);
-
-                  },
-
-
-                  child:
-                  const Text(
-                    "Submit",
-                  ),
-
-                )
-
-              ],
-
-            );
-
-          },
-
-        );
-
-      },
-
+    await launchUrl(
+      url,
+      mode: LaunchMode.externalApplication,
     );
 
   }
@@ -240,17 +50,50 @@ class _DoctorDetailsScreenState
 
 
 
-  Widget infoCard(
 
-      IconData icon,
-      String title,
-      String value,
 
-      ){
+
+  void callDoctor() async {
+
+    final Uri phone =
+    Uri.parse(
+      "tel:${widget.doctor.phoneNumber}",
+    );
+
+
+    await launchUrl(phone);
+
+  }
+
+
+
+
+
+
+
+
+  Widget infoCard({
+
+    required IconData icon,
+    required String title,
+    required String value,
+    Widget? trailing,
+
+  }) {
+
 
     return Card(
 
-      child: ListTile(
+      color:
+      const Color(0xffFAEEFF),
+
+
+      margin:
+      const EdgeInsets.only(bottom:12),
+
+
+      child:
+      ListTile(
 
         leading:
         Icon(icon),
@@ -263,6 +106,10 @@ class _DoctorDetailsScreenState
         subtitle:
         Text(value),
 
+
+        trailing:
+        trailing,
+
       ),
 
     );
@@ -273,37 +120,328 @@ class _DoctorDetailsScreenState
 
 
 
+
+
+
+
+
+  void addReviewDialog() {
+
+
+    final nameController =
+    TextEditingController();
+
+
+    final reviewController =
+    TextEditingController();
+
+
+    int rating = 5;
+
+
+
+
+    showDialog(
+
+      context: context,
+
+
+      builder: (context) {
+
+
+        return StatefulBuilder(
+
+
+          builder: (context, setDialogState) {
+
+
+            return AlertDialog(
+
+
+              title:
+              const Text(
+                "Add Review ⭐",
+              ),
+
+
+
+
+              content:
+              Column(
+
+                mainAxisSize:
+                MainAxisSize.min,
+
+
+                children: [
+
+
+
+                  TextField(
+
+                    controller:
+                    nameController,
+
+
+                    decoration:
+                    const InputDecoration(
+
+                      labelText:
+                      "Your Name",
+
+                      prefixIcon:
+                      Icon(Icons.person),
+
+                    ),
+
+                  ),
+
+
+
+
+
+
+                  TextField(
+
+                    controller:
+                    reviewController,
+
+
+                    decoration:
+                    const InputDecoration(
+
+                      labelText:
+                      "Write Review",
+
+                      prefixIcon:
+                      Icon(Icons.edit),
+
+                    ),
+
+                  ),
+
+
+
+
+
+
+                  const SizedBox(
+                    height: 15,
+                  ),
+
+
+
+
+
+
+                  Row(
+
+                    mainAxisAlignment:
+                    MainAxisAlignment.center,
+
+
+                    children:
+
+                    List.generate(5, (index) {
+
+
+                      return IconButton(
+
+
+                        icon:
+                        Icon(
+
+                          index < rating
+
+                              ? Icons.star
+
+                              : Icons.star_border,
+
+
+                          color:
+                          Colors.orange,
+
+                        ),
+
+
+
+
+                        onPressed: () {
+
+
+                          setDialogState(() {
+
+
+                            rating =
+                                index + 1;
+
+
+                          });
+
+
+                        },
+
+                      );
+
+
+                    }),
+
+                  ),
+
+
+                ],
+
+              ),
+
+
+
+
+
+
+
+              actions: [
+
+
+
+                ElevatedButton(
+
+
+                  onPressed: () async {
+
+
+                    if(
+                    nameController.text.isEmpty ||
+                        reviewController.text.isEmpty
+                    ){
+
+
+                      return;
+
+
+                    }
+
+
+
+
+
+                    await FirebaseFirestore
+                        .instance
+                        .collection("reviews")
+                        .add({
+
+
+
+                      "doctorEmail":
+                      widget.doctor.email,
+
+
+
+                      "userName":
+                      nameController.text.trim(),
+
+
+
+                      "reviewText":
+                      reviewController.text.trim(),
+
+
+
+                      "rating":
+                      rating,
+
+
+
+                      "createdAt":
+                      DateTime.now(),
+
+
+
+                    });
+
+
+
+
+
+
+                    Navigator.pop(context);
+
+
+
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(
+
+
+                      const SnackBar(
+
+                        content:
+                        Text(
+                          "Review Added ⭐",
+                        ),
+
+                      ),
+
+                    );
+
+
+                  },
+
+
+
+                  child:
+                  const Text(
+                    "Submit",
+                  ),
+
+                ),
+
+
+              ],
+
+
+            );
+
+
+          },
+
+
+        );
+
+
+      },
+
+    );
+
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
   @override
   Widget build(BuildContext context) {
 
 
-    final doctorReviews = reviews
-
-        .where(
-
-          (r) =>
-      r.doctorName ==
-          widget.doctor.name,
-
-    )
-
-        .toList();
-
-
-
     return Scaffold(
+
 
       backgroundColor:
       const Color(0xffF5F7FA),
 
 
 
-      appBar: AppBar(
+      appBar:
+      AppBar(
 
         title:
-        Text(
-          widget.doctor.name,
-        ),
+        Text(widget.doctor.name),
 
 
         backgroundColor:
@@ -318,109 +456,56 @@ class _DoctorDetailsScreenState
 
 
 
-      body: SingleChildScrollView(
+
+
+
+      body:
+      SingleChildScrollView(
 
 
         padding:
         const EdgeInsets.all(20),
 
 
-        child: Column(
+
+        child:
+        Column(
+
 
           children: [
 
 
 
-            CircleAvatar(
-
-              radius: 65,
-
-
-              backgroundImage:
-
-              AssetImage(
-                widget.doctor.image,
-              ),
-
-            ),
-
-
-
-
-            const SizedBox(
-              height:20,
-            ),
-
-
-
-            Text(
-
-              widget.doctor.name,
-
-
-              style:
-              const TextStyle(
-
-                fontSize:28,
-
-                fontWeight:
-                FontWeight.bold,
-
-              ),
-
-            ),
-
-
-
-
-            Text(
-
-              widget.doctor.specialization,
-
-
-              style:
-              const TextStyle(
-
-                color:
-                Colors.blue,
-
-                fontSize:18,
-
-              ),
-
-            ),
-
-
-
-
-
-            const SizedBox(
-              height:20,
-            ),
-
-
 
 
 
             infoCard(
 
+              icon:
               Icons.school,
 
+              title:
               "Qualification",
 
-              widget.doctor
-                  .qualification,
+              value:
+              widget.doctor.qualification,
 
             ),
 
 
 
+
+
+
             infoCard(
 
+              icon:
               Icons.work,
 
+              title:
               "Experience",
 
+              value:
               "${widget.doctor.experience} Years",
 
             ),
@@ -428,12 +513,17 @@ class _DoctorDetailsScreenState
 
 
 
+
+
             infoCard(
 
+              icon:
               Icons.local_hospital,
 
+              title:
               "Clinic",
 
+              value:
               widget.doctor.clinicName,
 
             ),
@@ -441,47 +531,39 @@ class _DoctorDetailsScreenState
 
 
 
-            Card(
-
-              child: ListTile(
-
-                leading: const Icon(
-                  Icons.location_on,
-                  color: Colors.red,
-                ),
-
-                title: const Text(
-                  "Address",
-                ),
-
-                subtitle: Text(
-                  widget.doctor.address,
-                ),
 
 
-                trailing: IconButton(
+            infoCard(
 
-                  icon: const Icon(
-                    Icons.map,
-                    color: Colors.blue,
-                  ),
+              icon:
+              Icons.location_on,
 
 
-                  onPressed: () async {
-
-                    final Uri mapUrl = Uri.parse(
-                      "https://www.google.com/maps/search/?api=1&query=${widget.doctor.address}",
-                    );
+              title:
+              "Address",
 
 
-                    await launchUrl(
-                      mapUrl,
-                      mode: LaunchMode.externalApplication,
-                    );
+              value:
+              widget.doctor.address,
 
-                  },
+
+
+              trailing:
+              IconButton(
+
+                icon:
+                const Icon(
+
+                  Icons.map,
+
+                  color:
+                  Colors.blue,
 
                 ),
+
+
+                onPressed:
+                openMap,
 
               ),
 
@@ -489,12 +571,20 @@ class _DoctorDetailsScreenState
 
 
 
+
+
+
             infoCard(
 
+              icon:
               Icons.access_time,
 
+
+              title:
               "Timing",
 
+
+              value:
               widget.doctor.timings,
 
             ),
@@ -502,12 +592,19 @@ class _DoctorDetailsScreenState
 
 
 
+
+
             infoCard(
 
+              icon:
               Icons.phone,
 
+
+              title:
               "Phone",
 
+
+              value:
               widget.doctor.phoneNumber,
 
             ),
@@ -515,14 +612,11 @@ class _DoctorDetailsScreenState
 
 
 
-            const SizedBox(
-              height:20,
-            ),
-
 
 
 
             ElevatedButton.icon(
+
 
               onPressed:
               addReviewDialog,
@@ -530,7 +624,7 @@ class _DoctorDetailsScreenState
 
               icon:
               const Icon(
-                  Icons.rate_review
+                Icons.star,
               ),
 
 
@@ -545,9 +639,16 @@ class _DoctorDetailsScreenState
 
 
 
+
+
+
             const SizedBox(
               height:20,
             ),
+
+
+
+
 
 
 
@@ -558,7 +659,8 @@ class _DoctorDetailsScreenState
               Alignment.centerLeft,
 
 
-              child: Text(
+              child:
+              Text(
 
                 "Patient Reviews ⭐",
 
@@ -581,77 +683,259 @@ class _DoctorDetailsScreenState
 
 
 
-            ListView.builder(
-
-              shrinkWrap: true,
-
-              physics: const NeverScrollableScrollPhysics(),
-
-              itemCount: doctorReviews.length,
-
-              itemBuilder: (context, index) {
-
-                return Card(
-
-                  child: ListTile(
-
-                    leading: const Icon(
-                      Icons.star,
-                      color: Colors.orange,
-                    ),
 
 
-                    title: Text(
-                      "${"⭐" * doctorReviews[index].rating.toInt()}  "
-                          "${doctorReviews[index].reviewText}",
-                    ),
+            StreamBuilder<QuerySnapshot>(
 
 
-                    subtitle: Text(
-                      "By ${doctorReviews[index].userName}",
-                    ),
+              stream:
+
+              FirebaseFirestore.instance
+
+                  .collection("reviews")
+
+                  .where(
+
+                "doctorEmail",
+
+                isEqualTo:
+                widget.doctor.email,
+
+              )
+
+                  .snapshots(),
 
 
-                    trailing: IconButton(
 
-                      icon: const Icon(
-                        Icons.delete,
-                        color: Colors.red,
+
+
+              builder: (context, snapshot) {
+
+
+
+                if(!snapshot.hasData){
+
+
+                  return const Center(
+
+                    child:
+                    CircularProgressIndicator(),
+
+                  );
+
+
+                }
+
+
+
+
+
+                final reviews =
+                    snapshot.data!.docs;
+
+
+
+
+
+                if(reviews.isEmpty){
+
+
+                  return const Text(
+
+                    "No Reviews Yet",
+
+                  );
+
+
+                }
+
+
+
+
+
+
+
+                return ListView.builder(
+
+
+                  shrinkWrap: true,
+
+
+                  physics:
+                  const NeverScrollableScrollPhysics(),
+
+
+                  itemCount:
+                  reviews.length,
+
+
+
+                  itemBuilder: (context,index){
+
+
+
+                    final data =
+                    reviews[index].data()
+                    as Map<String,dynamic>;
+
+
+
+
+                    int rating =
+                        data["rating"] ?? 0;
+
+
+
+
+                    return Card(
+
+
+                      color:
+                      const Color(0xffFAEEFF),
+
+
+
+                      margin:
+                      const EdgeInsets.only(
+                        bottom: 12,
                       ),
 
 
-                      onPressed: () async {
-
-                        reviews.remove(
-                          doctorReviews[index],
-                        );
 
 
-                        await saveReviews();
+                      child:
+                      ListTile(
 
 
-                        setState(() {});
 
-                      },
+                        leading:
+                        const Icon(
 
-                    ),
+                          Icons.person,
 
-                  ),
+                          size: 35,
+
+                        ),
+
+
+
+
+
+                        title:
+                        Text(
+
+                          data["userName"] ?? "User",
+
+
+                          style:
+                          const TextStyle(
+
+                            fontWeight:
+                            FontWeight.bold,
+
+                          ),
+
+                        ),
+
+
+
+
+
+
+                        subtitle:
+                        Column(
+
+
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+
+
+                          children: [
+
+
+
+
+                            Row(
+
+                              children:
+
+                              List.generate(5,(index){
+
+
+                                return Icon(
+
+                                  index < rating
+
+                                      ? Icons.star
+
+                                      : Icons.star_border,
+
+
+                                  color:
+                                  Colors.orange,
+
+
+                                  size:18,
+
+                                );
+
+
+                              }),
+
+                            ),
+
+
+
+
+
+
+                            const SizedBox(
+                              height:5,
+                            ),
+
+
+
+
+
+
+                            Text(
+
+                              data["reviewText"] ?? "",
+
+                            ),
+
+
+
+
+                          ],
+
+                        ),
+
+
+
+
+                      ),
+
+
+                    );
+
+
+
+                  },
+
 
                 );
 
+
+
               },
 
+
             ),
 
 
 
 
-
-
-            const SizedBox(
-              height:20,
-            ),
 
 
 
@@ -665,39 +949,18 @@ class _DoctorDetailsScreenState
               child:
               ElevatedButton.icon(
 
-
-                onPressed: () async {
-
-
-                  final Uri phoneUri =
-                  Uri(
-
-                    scheme:
-                    "tel",
-
-                    path:
-                    widget.doctor.phoneNumber,
-
-                  );
-
-
-                  await launchUrl(
-                      phoneUri
-                  );
-
-                },
-
-
                 icon:
-                const Icon(
-                    Icons.call
-                ),
+                const Icon(Icons.call),
 
 
                 label:
                 const Text(
-                    "CALL NOW"
+                  "CALL NOW",
                 ),
+
+
+                onPressed:
+                callDoctor,
 
               ),
 
@@ -707,11 +970,6 @@ class _DoctorDetailsScreenState
 
 
 
-            const SizedBox(
-              height:15,
-            ),
-
-
 
 
 
@@ -725,18 +983,29 @@ class _DoctorDetailsScreenState
               ElevatedButton.icon(
 
 
-                onPressed: () {
+                icon:
+                const Icon(
+                  Icons.calendar_month,
+                ),
+
+
+                label:
+                const Text(
+                  "BOOK APPOINTMENT",
+                ),
+
+
+
+                onPressed: (){
 
 
                   Navigator.push(
 
                     context,
 
-
                     MaterialPageRoute(
 
                       builder: (_) =>
-
                           AppointmentScreen(
 
                             doctor:
@@ -748,23 +1017,15 @@ class _DoctorDetailsScreenState
 
                   );
 
+
                 },
 
-
-                icon:
-                const Icon(
-                    Icons.calendar_month
-                ),
-
-
-                label:
-                const Text(
-                    "BOOK APPOINTMENT"
-                ),
 
               ),
 
             ),
+
+
 
           ],
 

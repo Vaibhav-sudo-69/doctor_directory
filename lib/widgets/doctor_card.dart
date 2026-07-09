@@ -1,212 +1,444 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import '../models/doctor.dart';
 import '../screens/doctor_details_screen.dart';
 
+
 class DoctorCard extends StatelessWidget {
+
   final Doctor doctor;
+
 
   const DoctorCard({
     super.key,
     required this.doctor,
   });
 
+
+
+  void toggleFavorite() async {
+
+    final user =
+        FirebaseAuth.instance.currentUser;
+
+
+    if(user == null){
+      return;
+    }
+
+
+    final favRef =
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(user.email)
+        .collection("favorites")
+        .doc(doctor.email);
+
+
+    final fav =
+    await favRef.get();
+
+
+    if(fav.exists){
+
+      await favRef.delete();
+
+    }else{
+
+      await favRef.set(
+        doctor.toJson(),
+      );
+
+    }
+
+  }
+
+
+
+
+  void callDoctor() async {
+
+
+    final Uri phoneUri =
+    Uri(
+      scheme: "tel",
+      path: doctor.phoneNumber,
+    );
+
+
+    if(await canLaunchUrl(phoneUri)){
+
+
+      await launchUrl(
+        phoneUri,
+      );
+
+
+    }
+
+  }
+
+
+
+
+
+
   @override
   Widget build(BuildContext context) {
+
+
+    final user =
+        FirebaseAuth.instance.currentUser;
+
+
     return InkWell(
-      borderRadius: BorderRadius.circular(20),
-      onTap: () {
+
+      borderRadius:
+      BorderRadius.circular(20),
+
+
+      onTap: (){
+
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => DoctorDetailsScreen(
-              doctor: doctor,
-            ),
+            builder: (_) =>
+                DoctorDetailsScreen(
+                  doctor: doctor,
+                ),
           ),
         );
+
       },
+
+
+
       child: Card(
-        margin: const EdgeInsets.only(bottom: 18),
-        elevation: 5,
-        shadowColor: Colors.black12,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+
+        margin:
+        const EdgeInsets.only(bottom:18),
+
+        elevation:5,
+
+
+        shape:
+        RoundedRectangleBorder(
+
+          borderRadius:
+          BorderRadius.circular(20),
+
         ),
+
+
+
         child: Padding(
-          padding: const EdgeInsets.all(16),
+
+          padding:
+          const EdgeInsets.all(16),
+
+
+
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+
+            crossAxisAlignment:
+            CrossAxisAlignment.start,
+
+
             children: [
 
-              /// Doctor Image
+
+
+
               CircleAvatar(
-                radius: 38,
-                backgroundImage: AssetImage(
+
+                radius:38,
+
+                backgroundImage:
+                AssetImage(
                   doctor.image,
                 ),
+
               ),
 
-              const SizedBox(width: 15),
 
-              /// Doctor Information
+
+              const SizedBox(width:15),
+
+
+
+
               Expanded(
+
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+
+                  crossAxisAlignment:
+                  CrossAxisAlignment.start,
+
+
                   children: [
 
+
+
+
                     Row(
+
                       children: [
 
+
                         Expanded(
+
                           child: Text(
+
                             doctor.name,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
+
+                            style:
+                            const TextStyle(
+
+                              fontSize:20,
+
+                              fontWeight:
+                              FontWeight.bold,
+
                             ),
+
                           ),
+
                         ),
 
-                        IconButton(
-                          onPressed: () {
-                            doctor.isFavorite = !doctor.isFavorite;
 
-                            (context as Element).markNeedsBuild();
+
+
+                        StreamBuilder(
+
+                          stream:
+                          FirebaseFirestore
+                              .instance
+                              .collection("users")
+                              .doc(user?.email)
+                              .collection("favorites")
+                              .doc(doctor.email)
+                              .snapshots(),
+
+
+
+                          builder:(context,snapshot){
+
+
+                            bool fav =
+                                snapshot.hasData &&
+                                    snapshot.data!.exists;
+
+
+                            return IconButton(
+
+                              icon: Icon(
+
+                                fav
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+
+                                color:
+                                Colors.red,
+
+                              ),
+
+
+                              onPressed:
+                              toggleFavorite,
+
+                            );
+
                           },
-                          icon: Icon(
-                            doctor.isFavorite
-                                ? Icons.favorite
-                                : Icons.favorite_border,
-                            color: Colors.red,
-                          ),
+
                         ),
+
+
                       ],
+
                     ),
 
-                    Row(
-                      children: [
 
-                        const Icon(
-                          Icons.star,
-                          color: Colors.orange,
-                          size: 18,
-                        ),
 
-                        const SizedBox(width: 4),
 
-                        const Text(
-                          "4.9",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
+
+
+                    StreamBuilder<QuerySnapshot>(
+
+
+                      stream:
+                      FirebaseFirestore
+                          .instance
+                          .collection("reviews")
+                          .where(
+                        "doctorEmail",
+                        isEqualTo: doctor.email,
+                      )
+                          .snapshots(),
+
+
+
+                      builder:(context,snapshot){
+
+
+                        if(!snapshot.hasData){
+
+                          return const Text(
+                              "⭐ 0.0"
+                          );
+
+                        }
+
+
+
+                        final reviews =
+                            snapshot.data!.docs;
+
+
+                        double avg = 0;
+
+
+                        for(var r in reviews){
+
+                          final data =
+                          r.data()
+                          as Map<String,dynamic>;
+
+
+                          avg +=
+                          data["rating"];
+
+                        }
+
+
+
+                        if(reviews.isNotEmpty){
+
+                          avg =
+                              avg / reviews.length;
+
+                        }
+
+
+
+                        return Text(
+
+                          "⭐ ${avg.toStringAsFixed(1)} (${reviews.length})",
+
+                          style:
+                          const TextStyle(
+                            fontWeight:
+                            FontWeight.bold,
                           ),
-                        ),
 
-                        const SizedBox(width: 15),
+                        );
 
-                        const Icon(
-                          Icons.medical_services,
-                          color: Colors.blue,
-                          size: 18,
-                        ),
+                      },
 
-                        const SizedBox(width: 4),
-
-                        Expanded(
-                          child: Text(
-                            doctor.specialization,
-                            style: const TextStyle(
-                              color: Colors.blue,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
                     ),
 
-                    const SizedBox(height: 10),
 
-                    Row(
-                      children: [
 
-                        const Icon(
-                          Icons.location_on,
-                          color: Colors.red,
-                          size: 18,
-                        ),
 
-                        const SizedBox(width: 5),
 
-                        Expanded(
-                          child: Text(
-                            doctor.clinicName,
-                            style: const TextStyle(
-                              fontSize: 15,
-                            ),
-                          ),
-                        ),
-                      ],
+
+                    const SizedBox(height:8),
+
+
+
+                    Text(
+
+                      doctor.specialization,
+
+                      style:
+                      const TextStyle(
+                        color:Colors.blue,
+                      ),
+
                     ),
 
-                    const SizedBox(height: 8),
 
-                    Row(
-                      children: [
 
-                        const Icon(
-                          Icons.schedule,
-                          color: Colors.green,
-                          size: 18,
-                        ),
 
-                        const SizedBox(width: 5),
+                    const SizedBox(height:8),
 
-                        Expanded(
-                          child: Text(
-                            doctor.timings,
-                          ),
-                        ),
-                      ],
+
+
+
+                    Text(
+                      doctor.clinicName,
                     ),
 
-                    const SizedBox(height: 10),
 
-                    Row(
-                      children: [
 
-                        const Icon(
-                          Icons.work,
-                          color: Colors.deepPurple,
-                          size: 18,
-                        ),
 
-                        const SizedBox(width: 5),
+                    const SizedBox(height:8),
 
-                        Text(
-                          "${doctor.experience} Years Experience",
-                        ),
-                      ],
+
+
+
+
+                    Text(
+
+                      "${doctor.experience} Years Experience",
+
                     ),
+
+
                   ],
+
                 ),
+
               ),
 
-              const SizedBox(width: 10),
 
-              /// Call Button
+
+
+
+
+
+
               CircleAvatar(
-                backgroundColor: Colors.green.shade100,
-                radius: 24,
-                child: IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
+
+                backgroundColor:
+                Colors.green.shade100,
+
+
+                child:
+                IconButton(
+
+                  icon:
+                  const Icon(
+
                     Icons.call,
-                    color: Colors.green,
+
+                    color:
+                    Colors.green,
+
                   ),
+
+
+                  onPressed:
+                  callDoctor,
+
                 ),
+
               ),
+
+
+
             ],
+
           ),
+
         ),
+
       ),
+
     );
+
   }
+
 }
