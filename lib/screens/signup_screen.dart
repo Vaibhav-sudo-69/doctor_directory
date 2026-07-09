@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../models/user.dart';
-import '../data/user_data.dart';
 import 'home_screen.dart';
 
 
@@ -11,20 +11,27 @@ class SignupScreen extends StatefulWidget {
 
 
   @override
-  State<SignupScreen> createState() => _SignupScreenState();
+  State<SignupScreen> createState()
+  => _SignupScreenState();
 
 }
 
 
 
-class _SignupScreenState extends State<SignupScreen> {
+
+class _SignupScreenState
+    extends State<SignupScreen> {
 
 
-  final nameController = TextEditingController();
+  final nameController =
+  TextEditingController();
 
-  final emailController = TextEditingController();
+  final emailController =
+  TextEditingController();
 
-  final passwordController = TextEditingController();
+  final passwordController =
+  TextEditingController();
+
 
 
 
@@ -32,16 +39,22 @@ class _SignupScreenState extends State<SignupScreen> {
   void signup() async {
 
 
-    if (nameController.text.isEmpty ||
+    if (
+    nameController.text.isEmpty ||
         emailController.text.isEmpty ||
-        passwordController.text.isEmpty) {
+        passwordController.text.isEmpty
+    ) {
 
 
-      ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
 
         const SnackBar(
 
-          content: Text("Please fill all details"),
+          content:
+          Text(
+            "Please fill all details",
+          ),
 
         ),
 
@@ -55,38 +68,125 @@ class _SignupScreenState extends State<SignupScreen> {
 
 
 
-
-    currentUser = User(
-
-      name: nameController.text,
-
-      email: emailController.text,
-
-      password: passwordController.text,
-
-    );
+    try {
 
 
+      final credential =
+      await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
 
-    await saveUser();
+        email:
+        emailController.text.trim(),
+
+        password:
+        passwordController.text.trim(),
+
+      );
 
 
 
 
-    Navigator.pushReplacement(
 
-      context,
+      await credential.user!
+          .updateDisplayName(
 
-      MaterialPageRoute(
+        nameController.text.trim(),
 
-        builder: (_) => const HomeScreen(),
+      );
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(credential.user!.uid)
+          .set(
+        {
 
-      ),
+          "uid":
+          credential.user!.uid,
 
-    );
+          "name":
+          nameController.text.trim(),
+
+          "email":
+          emailController.text.trim(),
+
+          "createdAt":
+          DateTime.now(),
+
+        },
+      );
+
+
+
+      await credential.user!
+          .reload();
+
+
+
+
+
+
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+
+        const SnackBar(
+
+          content:
+          Text(
+            "Signup Successful ✅",
+          ),
+
+        ),
+
+      );
+
+
+
+
+
+      Navigator.pushReplacement(
+
+        context,
+
+        MaterialPageRoute(
+
+          builder: (_) =>
+          const HomeScreen(),
+
+        ),
+
+      );
+
+
+
+    }
+
+    on FirebaseAuthException catch (e) {
+
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+
+        SnackBar(
+
+          content:
+          Text(
+
+            e.message ??
+                "Signup Failed",
+
+          ),
+
+        ),
+
+      );
+
+
+    }
 
 
   }
+
+
 
 
 
@@ -102,31 +202,40 @@ class _SignupScreenState extends State<SignupScreen> {
 
       appBar: AppBar(
 
-        title: const Text("Signup"),
+        title:
+        const Text(
+          "Signup",
+        ),
 
-        backgroundColor: Colors.blue,
+        backgroundColor:
+        Colors.blue,
 
-        foregroundColor: Colors.white,
+        foregroundColor:
+        Colors.white,
 
       ),
 
 
 
 
+
+
+
       body: Padding(
 
-
-        padding: const EdgeInsets.all(20),
+        padding:
+        const EdgeInsets.all(20),
 
 
 
         child: Column(
 
-
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment:
+          MainAxisAlignment.center,
 
 
           children: [
+
 
 
 
@@ -134,34 +243,13 @@ class _SignupScreenState extends State<SignupScreen> {
 
               "Create Account",
 
-              style: TextStyle(
+              style:
+              TextStyle(
 
                 fontSize: 28,
 
-                fontWeight: FontWeight.bold,
-
-              ),
-
-            ),
-
-
-
-
-            const SizedBox(height:30),
-
-
-
-
-
-            TextField(
-
-              controller: nameController,
-
-              decoration: const InputDecoration(
-
-                labelText: "Name",
-
-                border: OutlineInputBorder(),
+                fontWeight:
+                FontWeight.bold,
 
               ),
 
@@ -171,31 +259,10 @@ class _SignupScreenState extends State<SignupScreen> {
 
 
 
-            const SizedBox(height:15),
-
-
-
-
-
-            TextField(
-
-              controller: emailController,
-
-              decoration: const InputDecoration(
-
-                labelText: "Email",
-
-                border: OutlineInputBorder(),
-
-              ),
-
+            const SizedBox(
+              height: 30,
             ),
 
-
-
-
-
-            const SizedBox(height:15),
 
 
 
@@ -204,15 +271,18 @@ class _SignupScreenState extends State<SignupScreen> {
 
             TextField(
 
-              controller: passwordController,
+              controller:
+              nameController,
 
-              obscureText: true,
 
-              decoration: const InputDecoration(
+              decoration:
+              const InputDecoration(
 
-                labelText: "Password",
+                labelText:
+                "Name",
 
-                border: OutlineInputBorder(),
+                border:
+                OutlineInputBorder(),
 
               ),
 
@@ -223,7 +293,86 @@ class _SignupScreenState extends State<SignupScreen> {
 
 
 
-            const SizedBox(height:25),
+            const SizedBox(
+              height: 15,
+            ),
+
+
+
+
+
+
+
+            TextField(
+
+              controller:
+              emailController,
+
+
+              decoration:
+              const InputDecoration(
+
+                labelText:
+                "Email",
+
+                border:
+                OutlineInputBorder(),
+
+              ),
+
+            ),
+
+
+
+
+
+
+
+
+            const SizedBox(
+              height: 15,
+            ),
+
+
+
+
+
+
+
+            TextField(
+
+              controller:
+              passwordController,
+
+              obscureText:
+              true,
+
+
+              decoration:
+              const InputDecoration(
+
+                labelText:
+                "Password",
+
+                border:
+                OutlineInputBorder(),
+
+              ),
+
+            ),
+
+
+
+
+
+
+
+
+            const SizedBox(
+              height: 25,
+            ),
+
+
 
 
 
@@ -232,13 +381,23 @@ class _SignupScreenState extends State<SignupScreen> {
 
             SizedBox(
 
-              width: double.infinity,
+              width:
+              double.infinity,
 
-              child: ElevatedButton(
 
-                onPressed: signup,
+              child:
+              ElevatedButton(
 
-                child: const Text("SIGN UP"),
+                onPressed:
+                signup,
+
+
+                child:
+                const Text(
+
+                  "SIGN UP",
+
+                ),
 
               ),
 
@@ -248,12 +407,9 @@ class _SignupScreenState extends State<SignupScreen> {
 
           ],
 
-
         ),
 
-
       ),
-
 
     );
 

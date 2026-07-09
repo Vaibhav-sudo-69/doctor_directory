@@ -1,91 +1,124 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-import '../data/user_data.dart';
 import 'login_screen.dart';
 
 
-class ProfileScreen extends StatefulWidget {
+class ProfileScreen extends StatelessWidget {
 
   const ProfileScreen({super.key});
-
-  @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
-
-}
-
-
-
-class _ProfileScreenState extends State<ProfileScreen> {
-
-
- void logout() async {
-  await logoutUser();
-
-  if (!mounted) return;
-
-  Navigator.of(context).pushAndRemoveUntil(
-    MaterialPageRoute(
-      builder: (context) => const LoginScreen(),
-    ),
-    (Route<dynamic> route) => false,
-  );
-}
-
 
 
   @override
   Widget build(BuildContext context) {
 
+
+    final user =
+        FirebaseAuth.instance.currentUser;
+
+
     return Scaffold(
+
+
+      backgroundColor:
+      const Color(0xffFFF1FF),
+
 
       appBar: AppBar(
 
-        title: const Text("Profile"),
+        title: const Text(
+          "Profile",
+        ),
 
-        backgroundColor: Colors.blue,
+        backgroundColor:
+        Colors.blue,
 
-        foregroundColor: Colors.white,
+        foregroundColor:
+        Colors.white,
 
       ),
 
 
+
+
       body: Padding(
 
-        padding: const EdgeInsets.all(20),
+        padding:
+        const EdgeInsets.all(20),
 
 
         child: Column(
 
+
           children: [
+
+
+
+            const SizedBox(
+              height: 20,
+            ),
+
 
 
             const CircleAvatar(
 
               radius: 60,
 
+              backgroundColor:
+              Color(0xffE5CCFF),
+
+
               child: Icon(
+
                 Icons.person,
+
                 size: 70,
+
+                color:
+                Colors.deepPurple,
+
               ),
 
             ),
 
 
 
-            const SizedBox(height:30),
+
+            const SizedBox(
+              height: 40,
+            ),
+
+
+
 
 
 
             Card(
 
+              color:
+              const Color(0xffFAEEFF),
+
+
               child: ListTile(
 
-                leading: const Icon(Icons.person),
+                leading:
+                const Icon(
+                  Icons.person,
+                ),
 
-                title: const Text("Name"),
 
-                subtitle: Text(
-                  currentUser?.name ?? "",
+                title:
+                const Text(
+                  "Name",
+                ),
+
+
+                subtitle:
+                Text(
+
+                  user?.displayName ??
+                      "User",
+
                 ),
 
               ),
@@ -95,16 +128,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
 
 
+
+
+
+            const SizedBox(
+              height: 10,
+            ),
+
+
+
+
+
+
+
             Card(
+
+              color:
+              const Color(0xffFAEEFF),
+
 
               child: ListTile(
 
-                leading: const Icon(Icons.email),
+                leading:
+                const Icon(
+                  Icons.email,
+                ),
 
-                title: const Text("Email"),
 
-                subtitle: Text(
-                  currentUser?.email ?? "",
+                title:
+                const Text(
+                  "Email",
+                ),
+
+
+                subtitle:
+                Text(
+
+                  user?.email ??
+                      "No Email",
+
                 ),
 
               ),
@@ -113,21 +175,73 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
 
 
-            const SizedBox(height:40),
+
+
+
+
+
+            const SizedBox(
+              height: 40,
+            ),
+
+
+
 
 
 
             SizedBox(
 
-              width: double.infinity,
+              width:
+              double.infinity,
 
-              child: ElevatedButton.icon(
-  onPressed: () {
-    logout();
-  },
-  icon: const Icon(Icons.logout),
-  label: const Text("LOGOUT"),
-),
+
+              child:
+              ElevatedButton.icon(
+
+
+                icon:
+                const Icon(
+                  Icons.logout,
+                ),
+
+
+                label:
+                const Text(
+                  "LOGOUT",
+                ),
+
+
+
+                onPressed: () async {
+
+
+                  await FirebaseAuth
+                      .instance
+                      .signOut();
+
+
+
+                  Navigator.pushAndRemoveUntil(
+
+                    context,
+
+
+                    MaterialPageRoute(
+
+                      builder: (_) =>
+                      const LoginScreen(),
+
+                    ),
+
+
+                        (route) => false,
+
+                  );
+
+
+                },
+
+              ),
 
             ),
 
