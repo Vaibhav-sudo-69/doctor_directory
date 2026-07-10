@@ -3,13 +3,76 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 
+
 class MyAppointmentsScreen extends StatelessWidget {
+
 
   const MyAppointmentsScreen({super.key});
 
 
+
+
+
+  Color getStatusColor(String status){
+
+
+    if(status == "Accepted"){
+
+      return Colors.green;
+
+    }
+
+
+    if(status == "Rejected"){
+
+      return Colors.red;
+
+    }
+
+
+    return Colors.orange;
+
+
+  }
+
+
+
+
+
+
+  IconData getStatusIcon(String status){
+
+
+    if(status == "Accepted"){
+
+      return Icons.check_circle;
+
+    }
+
+
+    if(status == "Rejected"){
+
+      return Icons.cancel;
+
+    }
+
+
+    return Icons.access_time;
+
+
+  }
+
+
+
+
+
+
+
+
+
   @override
   Widget build(BuildContext context) {
+
 
 
     final user =
@@ -17,7 +80,11 @@ class MyAppointmentsScreen extends StatelessWidget {
 
 
 
+
+
+
     if(user == null){
+
 
       return const Scaffold(
 
@@ -31,7 +98,12 @@ class MyAppointmentsScreen extends StatelessWidget {
 
       );
 
+
     }
+
+
+
+
 
 
 
@@ -40,24 +112,41 @@ class MyAppointmentsScreen extends StatelessWidget {
     return Scaffold(
 
 
+
       backgroundColor:
       const Color(0xffF5F7FA),
 
 
 
-      appBar: AppBar(
 
-        title: const Text(
+
+
+
+      appBar:
+      AppBar(
+
+
+        title:
+        const Text(
+
           "My Appointments",
+
         ),
+
+
 
         backgroundColor:
         Colors.blue,
 
+
+
         foregroundColor:
         Colors.white,
 
+
       ),
+
+
 
 
 
@@ -70,10 +159,14 @@ class MyAppointmentsScreen extends StatelessWidget {
       StreamBuilder<QuerySnapshot>(
 
 
+
         stream:
+
+
         FirebaseFirestore.instance
 
             .collection("appointments")
+
 
             .where(
 
@@ -84,6 +177,7 @@ class MyAppointmentsScreen extends StatelessWidget {
 
         )
 
+
             .snapshots(),
 
 
@@ -92,11 +186,17 @@ class MyAppointmentsScreen extends StatelessWidget {
 
 
 
-        builder: (context, snapshot){
+
+
+        builder:(context,snapshot){
 
 
 
-          if(snapshot.connectionState ==
+
+
+
+          if(snapshot.connectionState
+              ==
               ConnectionState.waiting){
 
 
@@ -107,26 +207,9 @@ class MyAppointmentsScreen extends StatelessWidget {
 
             );
 
-          }
-
-
-
-
-
-
-          if(snapshot.hasError){
-
-            return Center(
-
-              child: Text(
-
-                snapshot.error.toString(),
-
-              ),
-
-            );
 
           }
+
 
 
 
@@ -139,21 +222,30 @@ class MyAppointmentsScreen extends StatelessWidget {
               snapshot.data!.docs.isEmpty){
 
 
+
             return const Center(
 
-              child: Text(
+              child:
+              Text(
 
                 "No Appointments Yet",
 
-                style: TextStyle(
-                  fontSize: 20,
+                style:
+                TextStyle(
+
+                  fontSize:20,
+
                 ),
 
               ),
 
             );
 
+
           }
+
+
+
 
 
 
@@ -166,6 +258,59 @@ class MyAppointmentsScreen extends StatelessWidget {
 
 
 
+          appointments.sort((a,b){
+
+
+            final dataA =
+            a.data() as Map<String,dynamic>;
+
+
+            final dataB =
+            b.data() as Map<String,dynamic>;
+
+
+
+            int priority(String status){
+
+
+              if(status == "Pending"){
+
+                return 0;
+
+              }
+
+
+              if(status == "Accepted"){
+
+                return 1;
+
+              }
+
+
+              return 2;
+
+
+            }
+
+
+
+
+            return priority(
+              dataA["status"] ?? "Pending",
+            ).compareTo(
+
+              priority(
+                dataB["status"] ?? "Pending",
+              ),
+
+            );
+
+
+          });
+
+
+
+
 
 
 
@@ -174,19 +319,43 @@ class MyAppointmentsScreen extends StatelessWidget {
           return ListView.builder(
 
 
+
+
             itemCount:
             appointments.length,
 
 
 
-            itemBuilder:
-                (context,index){
+
+
+
+            itemBuilder:(context,index){
+
+
+
+
 
 
 
               final data =
+
+
               appointments[index].data()
+
+
               as Map<String,dynamic>;
+
+
+
+
+
+
+              String status =
+
+                  data["status"]
+                      ??
+                      "Pending";
+
 
 
 
@@ -197,8 +366,22 @@ class MyAppointmentsScreen extends StatelessWidget {
 
               return Card(
 
+
+
+                color:
+                const Color(0xffFAEEFF),
+
+
+
                 margin:
                 const EdgeInsets.all(12),
+
+
+
+                elevation:4,
+
+
+
 
 
 
@@ -207,15 +390,28 @@ class MyAppointmentsScreen extends StatelessWidget {
 
 
 
-                  leading:
-                  const Icon(
 
-                    Icons.calendar_month,
+
+
+                  leading:
+                  Icon(
+
+
+                    getStatusIcon(status),
+
+
 
                     color:
-                    Colors.blue,
+                    getStatusColor(status),
+
+
+
+                    size:35,
+
 
                   ),
+
+
 
 
 
@@ -227,8 +423,25 @@ class MyAppointmentsScreen extends StatelessWidget {
                   title:
                   Text(
 
+
                     data["doctorName"]
-                        ?? "",
+                        ??
+                        "",
+
+
+
+
+                    style:
+                    const TextStyle(
+
+
+                      fontWeight:
+                      FontWeight.bold,
+
+
+                    ),
+
+
 
                   ),
 
@@ -239,14 +452,93 @@ class MyAppointmentsScreen extends StatelessWidget {
 
 
                   subtitle:
-                  Text(
+                  Column(
 
-                    "Patient: ${data["patientName"] ?? ""}\n"
-                        "Date: ${data["date"] ?? ""}\n"
-                        "Time: ${data["time"] ?? ""}\n"
-                        "Status: ${data["status"] ?? "Pending"}",
+
+                    crossAxisAlignment:
+                    CrossAxisAlignment.start,
+
+
+
+                    children: [
+
+
+
+
+                      Text(
+
+                        "Patient: ${data["patientName"]}",
+
+                      ),
+
+
+
+
+                      Text(
+
+                        "Date: ${data["date"]}",
+
+                      ),
+
+
+
+
+                      Text(
+
+                        "Time: ${data["time"]}",
+
+                      ),
+
+
+
+
+
+
+
+                      const SizedBox(
+                        height:5,
+                      ),
+
+
+
+
+
+
+
+                      Text(
+
+
+                        status,
+
+
+
+                        style:
+                        TextStyle(
+
+
+                          color:
+                          getStatusColor(status),
+
+
+
+                          fontWeight:
+                          FontWeight.bold,
+
+
+                        ),
+
+
+                      ),
+
+
+
+
+                    ],
+
+
 
                   ),
+
 
 
 
@@ -263,10 +555,13 @@ class MyAppointmentsScreen extends StatelessWidget {
                     icon:
                     const Icon(
 
+
                       Icons.delete,
+
 
                       color:
                       Colors.red,
+
 
                     ),
 
@@ -274,19 +569,27 @@ class MyAppointmentsScreen extends StatelessWidget {
 
 
 
-                    onPressed: () async {
 
 
-                      await FirebaseFirestore
-                          .instance
 
-                          .collection(
-                          "appointments"
-                      )
+                    onPressed:() async {
+
+
+
+
+
+                      await FirebaseFirestore.instance
+
+
+                          .collection("appointments")
+
 
                           .doc(
-                          appointments[index].id
+
+                        appointments[index].id,
+
                       )
+
 
                           .delete();
 
@@ -294,19 +597,32 @@ class MyAppointmentsScreen extends StatelessWidget {
 
 
 
+
+
+
+
                       ScaffoldMessenger.of(context)
+
                           .showSnackBar(
+
 
                         const SnackBar(
 
+
                           content:
                           Text(
-                            "Appointment Cancelled ✅",
+
+                            "Appointment Deleted ✅",
+
                           ),
+
 
                         ),
 
+
+
                       );
+
 
 
                     },
@@ -315,26 +631,39 @@ class MyAppointmentsScreen extends StatelessWidget {
                   ),
 
 
+
+
                 ),
+
 
 
               );
 
 
+
             },
+
 
 
           );
 
+
+
+
         },
+
 
 
       ),
 
 
+
+
     );
 
 
+
   }
+
 
 }

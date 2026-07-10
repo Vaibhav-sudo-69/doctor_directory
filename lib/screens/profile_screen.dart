@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'login_screen.dart';
+
 
 
 class ProfileScreen extends StatelessWidget {
 
   const ProfileScreen({super.key});
+
 
 
   @override
@@ -17,6 +20,7 @@ class ProfileScreen extends StatelessWidget {
         FirebaseAuth.instance.currentUser;
 
 
+
     return Scaffold(
 
 
@@ -24,14 +28,19 @@ class ProfileScreen extends StatelessWidget {
       const Color(0xffFFF1FF),
 
 
-      appBar: AppBar(
 
-        title: const Text(
+      appBar:
+      AppBar(
+
+        title:
+        const Text(
           "Profile",
         ),
 
+
         backgroundColor:
         Colors.blue,
+
 
         foregroundColor:
         Colors.white,
@@ -41,38 +50,56 @@ class ProfileScreen extends StatelessWidget {
 
 
 
-      body: Padding(
+
+
+
+      body:
+      Padding(
+
 
         padding:
         const EdgeInsets.all(20),
 
 
-        child: Column(
+
+
+        child:
+        Column(
 
 
           children: [
 
 
 
+
             const SizedBox(
-              height: 20,
+              height:20,
             ),
+
+
+
+
 
 
 
             const CircleAvatar(
 
-              radius: 60,
+              radius:60,
+
 
               backgroundColor:
               Color(0xffE5CCFF),
 
 
-              child: Icon(
+
+              child:
+              Icon(
 
                 Icons.person,
 
-                size: 70,
+
+                size:70,
+
 
                 color:
                 Colors.deepPurple,
@@ -84,9 +111,13 @@ class ProfileScreen extends StatelessWidget {
 
 
 
+
+
+
             const SizedBox(
-              height: 40,
+              height:40,
             ),
+
 
 
 
@@ -99,12 +130,16 @@ class ProfileScreen extends StatelessWidget {
               const Color(0xffFAEEFF),
 
 
-              child: ListTile(
+
+              child:
+              ListTile(
+
 
                 leading:
                 const Icon(
                   Icons.person,
                 ),
+
 
 
                 title:
@@ -113,13 +148,16 @@ class ProfileScreen extends StatelessWidget {
                 ),
 
 
+
                 subtitle:
                 Text(
 
-                  user?.displayName ??
+                  user?.displayName
+                      ??
                       "User",
 
                 ),
+
 
               ),
 
@@ -131,9 +169,12 @@ class ProfileScreen extends StatelessWidget {
 
 
 
+
             const SizedBox(
-              height: 10,
+              height:10,
             ),
+
+
 
 
 
@@ -143,16 +184,23 @@ class ProfileScreen extends StatelessWidget {
 
             Card(
 
+
               color:
               const Color(0xffFAEEFF),
 
 
-              child: ListTile(
+
+              child:
+              ListTile(
+
+
 
                 leading:
                 const Icon(
                   Icons.email,
                 ),
+
+
 
 
                 title:
@@ -161,17 +209,21 @@ class ProfileScreen extends StatelessWidget {
                 ),
 
 
+
                 subtitle:
                 Text(
 
-                  user?.email ??
+                  user?.email
+                      ??
                       "No Email",
 
                 ),
 
+
               ),
 
             ),
+
 
 
 
@@ -181,8 +233,131 @@ class ProfileScreen extends StatelessWidget {
 
 
             const SizedBox(
-              height: 40,
+              height:10,
             ),
+
+
+
+
+
+
+
+            // 📅 TOTAL APPOINTMENTS
+
+
+            StreamBuilder<QuerySnapshot>(
+
+
+              stream:
+
+              FirebaseFirestore.instance
+
+                  .collection("appointments")
+
+                  .where(
+
+                "userEmail",
+
+                isEqualTo:
+                user?.email,
+
+              )
+
+                  .snapshots(),
+
+
+
+
+
+              builder:(context,snapshot){
+
+
+
+                int total = 0;
+
+
+
+                if(snapshot.hasData){
+
+
+                  total =
+                      snapshot.data!.docs.length;
+
+
+                }
+
+
+
+
+                return Card(
+
+
+                  color:
+                  const Color(0xffFAEEFF),
+
+
+
+                  child:
+                  ListTile(
+
+
+
+                    leading:
+                    const Icon(
+
+                      Icons.calendar_month,
+
+                    ),
+
+
+
+
+                    title:
+                    const Text(
+
+                      "Total Appointments",
+
+                    ),
+
+
+
+
+
+                    subtitle:
+                    Text(
+
+                      "$total",
+
+                    ),
+
+
+
+                  ),
+
+
+                );
+
+
+              },
+
+
+            ),
+
+
+
+
+
+
+
+
+
+
+
+            const Spacer(),
+
+
+
+
 
 
 
@@ -191,69 +366,105 @@ class ProfileScreen extends StatelessWidget {
 
             SizedBox(
 
+
               width:
               double.infinity,
+
 
 
               child:
               ElevatedButton.icon(
 
 
+
                 icon:
                 const Icon(
+
                   Icons.logout,
+
                 ),
+
+
+
 
 
                 label:
                 const Text(
+
                   "LOGOUT",
+
                 ),
+
+
+
+
+
 
 
 
                 onPressed: () async {
 
 
-                  await FirebaseAuth
-                      .instance
+
+
+                  await FirebaseAuth.instance
                       .signOut();
+
 
 
 
                   Navigator.pushAndRemoveUntil(
 
+
                     context,
+
 
 
                     MaterialPageRoute(
 
+
                       builder: (_) =>
                       const LoginScreen(),
+
 
                     ),
 
 
-                        (route) => false,
+
+
+                        (route)=>false,
+
 
                   );
 
 
+
                 },
+
+
 
               ),
 
+
             ),
+
+
+
+
 
 
           ],
 
         ),
 
+
       ),
+
 
     );
 
+
   }
+
 
 }

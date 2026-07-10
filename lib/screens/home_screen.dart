@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../models/doctor.dart';
 
@@ -10,6 +11,8 @@ import '../widgets/category_chip.dart';
 import 'profile_screen.dart';
 import 'favorite_screen.dart';
 import 'my_appointments_screen.dart';
+import 'notification_screen.dart';
+
 
 
 class HomeScreen extends StatefulWidget {
@@ -18,10 +21,11 @@ class HomeScreen extends StatefulWidget {
 
 
   @override
-  State<HomeScreen> createState() =>
-      _HomeScreenState();
+  State<HomeScreen> createState()
+  => _HomeScreenState();
 
 }
+
 
 
 
@@ -31,7 +35,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String selectedCategory = "All";
 
-
   String searchText = "";
 
 
@@ -39,11 +42,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<String> categories = [
 
     "All",
-
     "Physician",
-
     "Dentist",
-
     "Cardiologist",
 
   ];
@@ -51,10 +51,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
 
+  void searchDoctor(String value){
 
-  void searchDoctor(String value) {
-
-    setState(() {
+    setState((){
 
       searchText =
           value.toLowerCase();
@@ -68,8 +67,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
 
+
   @override
   Widget build(BuildContext context) {
+
+
+    final user =
+        FirebaseAuth.instance.currentUser;
 
 
     return Scaffold(
@@ -103,19 +107,225 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
 
+
+
+          // 🔔 NOTIFICATION
+
+
+          StreamBuilder<QuerySnapshot>(
+
+
+            stream:
+
+            FirebaseFirestore.instance
+
+                .collection("appointments")
+
+                .where(
+
+              "userEmail",
+
+              isEqualTo:
+              user!.email,
+
+            )
+
+                .where(
+
+              "isRead",
+
+              isEqualTo:
+              false,
+
+            )
+
+                .snapshots(),
+
+
+
+
+            builder:(context,snapshot){
+
+
+
+              int count = 0;
+
+
+
+              if(snapshot.hasData){
+
+
+                count =
+                    snapshot.data!.docs.where((doc){
+
+
+                      final data =
+                      doc.data()
+                      as Map<String,dynamic>;
+
+
+
+                      return
+
+                        data["status"] == "Accepted"
+
+                            ||
+
+                            data["status"] == "Rejected";
+
+
+                    }).length;
+
+
+              }
+
+
+
+
+
+
+
+
+              return Stack(
+
+                children: [
+
+
+
+
+                  IconButton(
+
+
+                    icon:
+                    const Icon(
+                      Icons.notifications,
+                    ),
+
+
+
+                    onPressed:(){
+
+
+
+                      Navigator.push(
+
+                        context,
+
+
+                        MaterialPageRoute(
+
+                          builder: (_) =>
+
+                          const NotificationScreen(),
+
+                        ),
+
+                      );
+
+
+
+                    },
+
+
+                  ),
+
+
+
+
+
+
+
+                  if(count > 0)
+
+
+                    Positioned(
+
+
+                      right:6,
+
+                      top:6,
+
+
+
+                      child:
+                      Container(
+
+
+                        padding:
+                        const EdgeInsets.all(5),
+
+
+
+                        decoration:
+                        const BoxDecoration(
+
+                          color:
+                          Colors.red,
+
+                          shape:
+                          BoxShape.circle,
+
+                        ),
+
+
+
+                        child:
+                        Text(
+
+
+                          count.toString(),
+
+
+                          style:
+                          const TextStyle(
+
+                            color:
+                            Colors.white,
+
+                            fontSize:10,
+
+                          ),
+
+
+                        ),
+
+
+                      ),
+
+
+                    ),
+
+
+                ],
+
+
+              );
+
+
+
+            },
+
+
+          ),
+
+
+
+
+
+
+
           IconButton(
 
             icon:
             const Icon(Icons.person),
 
 
-            onPressed: () {
+            onPressed:(){
 
 
               Navigator.push(
 
                 context,
-
 
                 MaterialPageRoute(
 
@@ -137,16 +347,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
 
-
-          // FAVORITE SCREEN FIXED ❤️
-
           IconButton(
 
             icon:
             const Icon(Icons.favorite),
 
 
-            onPressed: () {
+            onPressed:(){
 
 
               Navigator.push(
@@ -157,7 +364,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 MaterialPageRoute(
 
                   builder: (_) =>
-
                   const FavoriteScreen(),
 
                 ),
@@ -177,29 +383,142 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
 
-          IconButton(
-
-            icon:
-            const Icon(
-                Icons.calendar_month
-            ),
+          // 📅 APPOINTMENT
 
 
-            onPressed: () {
+          StreamBuilder<QuerySnapshot>(
 
 
-              Navigator.push(
+            stream:
 
-                context,
+            FirebaseFirestore.instance
+
+                .collection("appointments")
+
+                .where(
+
+              "userEmail",
+
+              isEqualTo:
+              user.email,
+
+            )
+
+                .where(
+
+              "status",
+
+              isEqualTo:
+              "Pending",
+
+            )
+
+                .snapshots(),
 
 
-                MaterialPageRoute(
 
-                  builder: (_) =>
 
-                  const MyAppointmentsScreen(),
+            builder:(context,snapshot){
 
-                ),
+
+              int count = 0;
+
+
+              if(snapshot.hasData){
+
+                count =
+                    snapshot.data!.docs.length;
+
+              }
+
+
+
+              return Stack(
+
+                children: [
+
+
+
+                  IconButton(
+
+                    icon:
+                    const Icon(
+                      Icons.calendar_month,
+                    ),
+
+
+
+                    onPressed:(){
+
+
+                      Navigator.push(
+
+                        context,
+
+                        MaterialPageRoute(
+
+                          builder: (_) =>
+
+                          const MyAppointmentsScreen(),
+
+                        ),
+
+                      );
+
+
+                    },
+
+                  ),
+
+
+
+
+
+
+                  if(count > 0)
+
+
+                    Positioned(
+
+                      right:6,
+
+                      top:6,
+
+
+                      child:
+                      CircleAvatar(
+
+                        radius:8,
+
+
+                        backgroundColor:
+                        Colors.red,
+
+
+                        child:
+                        Text(
+
+                          count.toString(),
+
+                          style:
+                          const TextStyle(
+
+                            fontSize:10,
+
+                            color:
+                            Colors.white,
+
+                          ),
+
+                        ),
+
+                      ),
+
+                    ),
+
+
+
+                ],
 
               );
 
@@ -207,6 +526,7 @@ class _HomeScreenState extends State<HomeScreen> {
             },
 
           ),
+
 
 
         ],
@@ -219,26 +539,23 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
 
+
+
       body:
       Padding(
-
 
         padding:
         const EdgeInsets.all(16),
 
 
-
         child:
         Column(
-
 
           crossAxisAlignment:
           CrossAxisAlignment.start,
 
 
-
           children: [
-
 
 
 
@@ -246,11 +563,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
               "👋 Hello",
 
-
               style:
               TextStyle(
 
-                fontSize: 28,
+                fontSize:28,
 
                 fontWeight:
                 FontWeight.bold,
@@ -261,14 +577,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
 
-
-
-            const SizedBox(
-              height:20,
-            ),
-
-
-
+            const SizedBox(height:20),
 
 
 
@@ -282,14 +591,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
 
-
-
-            const SizedBox(
-              height:15,
-            ),
-
-
-
+            const SizedBox(height:15),
 
 
 
@@ -302,7 +604,6 @@ class _HomeScreenState extends State<HomeScreen> {
               child:
               ListView.builder(
 
-
                 scrollDirection:
                 Axis.horizontal,
 
@@ -311,9 +612,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 categories.length,
 
 
-                itemBuilder:
-                    (context,index){
-
+                itemBuilder:(context,index){
 
 
                   final category =
@@ -323,7 +622,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   return CategoryChip(
 
-
                     text:
                     category,
 
@@ -332,28 +630,23 @@ class _HomeScreenState extends State<HomeScreen> {
                     selectedCategory == category,
 
 
-
-                    onTap: (){
+                    onTap:(){
 
 
                       setState((){
 
-
                         selectedCategory =
                             category;
-
 
                       });
 
 
                     },
 
-
                   );
 
 
                 },
-
 
               ),
 
@@ -363,14 +656,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
 
-
-
-            const SizedBox(
-              height:20,
-            ),
-
-
-
+            const SizedBox(height:20),
 
 
 
@@ -383,26 +669,19 @@ class _HomeScreenState extends State<HomeScreen> {
               StreamBuilder<QuerySnapshot>(
 
 
-
                 stream:
 
                 FirebaseFirestore.instance
-
                     .collection("doctors")
-
                     .snapshots(),
 
 
 
-
-                builder:
-                    (context,snapshot){
+                builder:(context,snapshot){
 
 
 
-                  if(snapshot.connectionState
-                      ==
-                      ConnectionState.waiting){
+                  if(!snapshot.hasData){
 
 
                     return const Center(
@@ -419,28 +698,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
 
-
-                  if(!snapshot.hasData){
-
-
-                    return const Center(
-
-                      child:
-                      Text("No Doctors Found"),
-
-                    );
-
-
-                  }
-
-
-
-
-
-
-
-
-
                   List<Doctor> doctors =
 
 
@@ -448,14 +705,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
 
-                    final data =
-                    doc.data()
-                    as Map<String,dynamic>;
+                    return Doctor.fromJson(
 
+                      doc.data()
+                      as Map<String,dynamic>,
 
-
-                    return Doctor.fromJson(data);
-
+                    );
 
 
                   }).toList();
@@ -465,49 +720,37 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
 
-
-
                   doctors =
+
                       doctors.where((doctor){
-
-
-
-                        bool matchSearch =
-
-                        doctor.name
-
-                            .toLowerCase()
-
-                            .contains(searchText);
-
-
-
-
-
-
-                        bool matchCategory =
-
-                            selectedCategory == "All"
-
-                                ||
-
-                                doctor.specialization
-                                    .toLowerCase()
-
-                                    ==
-
-                                    selectedCategory
-                                        .toLowerCase();
-
-
-
 
 
 
                         return
 
-                          matchSearch &&
-                              matchCategory;
+
+                          doctor.name
+                              .toLowerCase()
+                              .contains(searchText)
+
+
+                              &&
+
+
+                              (
+
+                                  selectedCategory=="All"
+
+                                      ||
+
+                                      doctor.specialization
+                                          .toLowerCase()
+                                          ==
+
+                                          selectedCategory
+                                              .toLowerCase()
+
+                              );
 
 
                       }).toList();
@@ -518,18 +761,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
 
-
                   return ListView.builder(
-
 
                     itemCount:
                     doctors.length,
 
 
-
-                    itemBuilder:
-                        (context,index){
-
+                    itemBuilder:(context,index){
 
 
                       return DoctorCard(
@@ -542,16 +780,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     },
 
-                  );
 
+                  );
 
 
                 },
 
-
               ),
 
             ),
+
 
 
           ],
@@ -560,11 +798,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
       ),
 
-
     );
 
 
   }
-
 
 }

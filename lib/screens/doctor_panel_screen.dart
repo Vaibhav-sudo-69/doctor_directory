@@ -7,14 +7,21 @@ import 'login_screen.dart';
 
 class DoctorPanelScreen extends StatefulWidget {
 
+
   final String doctorId;
+
   final Map<String,dynamic> doctorData;
 
 
+
   const DoctorPanelScreen({
+
     super.key,
+
     required this.doctorId,
+
     required this.doctorData,
+
   });
 
 
@@ -24,6 +31,7 @@ class DoctorPanelScreen extends StatefulWidget {
   => _DoctorPanelScreenState();
 
 }
+
 
 
 
@@ -62,16 +70,16 @@ class _DoctorPanelScreenState
     ScaffoldMessenger.of(context)
         .showSnackBar(
 
+
       SnackBar(
 
         content:
         Text(
-
           "Appointment $status",
-
         ),
 
       ),
+
 
     );
 
@@ -90,9 +98,7 @@ class _DoctorPanelScreenState
   Widget build(BuildContext context) {
 
 
-
     return Scaffold(
-
 
 
 
@@ -109,10 +115,8 @@ class _DoctorPanelScreenState
 
 
 
-
         backgroundColor:
         Colors.blue,
-
 
 
         foregroundColor:
@@ -120,20 +124,17 @@ class _DoctorPanelScreenState
 
 
 
-
-
         actions: [
+
 
 
           IconButton(
 
+
             icon:
             const Icon(
-
               Icons.logout,
-
             ),
-
 
 
 
@@ -153,8 +154,172 @@ class _DoctorPanelScreenState
                 ),
 
 
+                    (route)=>false,
 
-                    (route) => false,
+              );
+
+
+            },
+
+
+          ),
+
+
+
+        ],
+
+
+      ),
+
+
+
+
+
+
+
+      body:
+
+      Column(
+
+
+        children: [
+
+
+
+
+
+
+
+
+          // 🔔 PENDING COUNT CARD
+
+          StreamBuilder<QuerySnapshot>(
+
+
+
+            stream:
+
+            FirebaseFirestore.instance
+
+                .collection("appointments")
+
+                .where(
+
+              "doctorEmail",
+
+              isEqualTo:
+
+              widget.doctorData["email"],
+
+            )
+
+
+                .where(
+
+              "status",
+
+              isEqualTo:
+
+              "Pending",
+
+            )
+
+
+                .snapshots(),
+
+
+
+
+
+
+
+            builder:(context,snapshot){
+
+
+
+              int count = 0;
+
+
+
+              if(snapshot.hasData){
+
+
+                count =
+                    snapshot.data!.docs.length;
+
+
+              }
+
+
+
+
+
+
+              return Container(
+
+
+                width:
+                double.infinity,
+
+
+                margin:
+                const EdgeInsets.all(12),
+
+
+
+                padding:
+                const EdgeInsets.all(15),
+
+
+
+
+
+                decoration:
+                BoxDecoration(
+
+
+                  color:
+                  Colors.blue,
+
+
+                  borderRadius:
+                  BorderRadius.circular(15),
+
+
+                ),
+
+
+
+
+
+
+                child:
+                Text(
+
+
+                  "🔔 Pending Requests: $count",
+
+
+
+                  style:
+                  const TextStyle(
+
+
+                    color:
+                    Colors.white,
+
+
+                    fontSize:18,
+
+
+                    fontWeight:
+                    FontWeight.bold,
+
+
+                  ),
+
+
+                ),
 
 
               );
@@ -166,409 +331,390 @@ class _DoctorPanelScreenState
           ),
 
 
+
+
+
+
+
+
+
+
+
+
+          // APPOINTMENT LIST
+
+          Expanded(
+
+
+
+            child:
+            StreamBuilder<QuerySnapshot>(
+
+
+
+
+
+              stream:
+
+              FirebaseFirestore.instance
+
+                  .collection("appointments")
+
+
+                  .where(
+
+                "doctorEmail",
+
+                isEqualTo:
+
+                widget.doctorData["email"],
+
+              )
+
+
+                  .snapshots(),
+
+
+
+
+
+
+
+
+              builder:(context,snapshot){
+
+
+
+
+
+
+                if(snapshot.connectionState
+                    ==
+                    ConnectionState.waiting){
+
+
+
+                  return const Center(
+
+                    child:
+                    CircularProgressIndicator(),
+
+                  );
+
+
+                }
+
+
+
+
+
+
+
+
+                if(!snapshot.hasData ||
+                    snapshot.data!.docs.isEmpty){
+
+
+
+                  return const Center(
+
+
+                    child:
+                    Text(
+
+                      "No Appointment Requests",
+
+                    ),
+
+
+                  );
+
+
+                }
+
+
+
+
+
+
+
+
+                final appointments =
+                    snapshot.data!.docs;
+
+
+
+
+
+
+
+
+                return ListView.builder(
+
+
+
+                  itemCount:
+                  appointments.length,
+
+
+
+
+
+                  itemBuilder:(context,index){
+
+
+
+
+
+
+
+                    final data =
+
+                    appointments[index].data()
+
+                    as Map<String,dynamic>;
+
+
+
+
+                    final id =
+                        appointments[index].id;
+
+
+
+
+
+
+
+
+                    return Card(
+
+
+                      margin:
+                      const EdgeInsets.all(10),
+
+
+
+
+
+
+                      child:
+                      ListTile(
+
+
+
+
+
+
+
+                        title:
+                        Text(
+
+                          data["patientName"]
+                              ??
+                              "",
+
+                        ),
+
+
+
+
+
+
+
+                        subtitle:
+                        Column(
+
+
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+
+
+
+                          children: [
+
+
+
+
+                            Text(
+                              "Phone: ${data["phoneNumber"]}",
+                            ),
+
+
+
+                            Text(
+                              "Date: ${data["date"]}",
+                            ),
+
+
+
+
+                            Text(
+                              "Time: ${data["time"]}",
+                            ),
+
+
+
+
+                            Text(
+                              "Status: ${data["status"]}",
+                            ),
+
+
+
+                          ],
+
+
+                        ),
+
+
+
+
+
+
+
+                        trailing:
+
+
+                        data["status"] == "Pending"
+
+
+                            ?
+
+
+                        Row(
+
+
+                          mainAxisSize:
+                          MainAxisSize.min,
+
+
+
+                          children: [
+
+
+
+
+                            IconButton(
+
+
+                              icon:
+                              const Icon(
+
+                                Icons.check,
+
+                                color:
+                                Colors.green,
+
+                              ),
+
+
+
+
+                              onPressed:(){
+
+
+                                updateStatus(
+
+                                  id,
+
+                                  "Accepted",
+
+                                );
+
+
+                              },
+
+
+                            ),
+
+
+
+
+
+
+
+                            IconButton(
+
+
+
+                              icon:
+                              const Icon(
+
+                                Icons.close,
+
+                                color:
+                                Colors.red,
+
+                              ),
+
+
+
+
+
+                              onPressed:(){
+
+
+                                updateStatus(
+
+                                  id,
+
+                                  "Rejected",
+
+                                );
+
+
+                              },
+
+
+                            ),
+
+
+
+                          ],
+
+
+                        )
+
+
+
+
+                            :
+
+
+
+                        Text(
+
+                          data["status"],
+
+                        ),
+
+
+
+
+                      ),
+
+
+                    );
+
+
+                  },
+
+
+                );
+
+
+              },
+
+
+            ),
+
+
+          ),
+
+
+
         ],
-
-
-
-
-      ),
-
-
-
-
-
-
-
-
-
-
-      body:
-      StreamBuilder<QuerySnapshot>(
-
-
-
-
-        stream:
-
-
-        FirebaseFirestore.instance
-
-            .collection("appointments")
-
-            .where(
-
-          "doctorEmail",
-
-          isEqualTo:
-          widget.doctorData["email"],
-
-        )
-
-            .snapshots(),
-
-
-
-
-
-
-
-        builder:
-            (context,snapshot){
-
-
-
-
-
-
-          if(snapshot.connectionState
-              ==
-              ConnectionState.waiting){
-
-
-
-            return const Center(
-
-              child:
-              CircularProgressIndicator(),
-
-            );
-
-
-          }
-
-
-
-
-
-
-
-
-          if(!snapshot.hasData ||
-              snapshot.data!.docs.isEmpty){
-
-
-
-            return const Center(
-
-              child:
-              Text(
-
-                "No Appointment Requests",
-
-              ),
-
-            );
-
-
-          }
-
-
-
-
-
-
-
-
-          final appointments =
-              snapshot.data!.docs;
-
-
-
-
-
-
-
-
-
-          return ListView.builder(
-
-
-
-            itemCount:
-            appointments.length,
-
-
-
-
-
-            itemBuilder:
-                (context,index){
-
-
-
-
-
-
-              final data =
-
-              appointments[index].data()
-
-              as Map<String,dynamic>;
-
-
-
-
-
-              final id =
-
-                  appointments[index].id;
-
-
-
-
-
-
-
-
-
-              return Card(
-
-
-                margin:
-                const EdgeInsets.all(10),
-
-
-
-
-
-
-
-                child:
-                ListTile(
-
-
-
-
-
-
-                  title:
-                  Text(
-
-                    data["patientName"]
-                        ??
-                        "",
-
-                  ),
-
-
-
-
-
-
-
-
-
-                  subtitle:
-                  Column(
-
-
-                    crossAxisAlignment:
-                    CrossAxisAlignment.start,
-
-
-
-
-                    children: [
-
-
-
-
-
-
-                      Text(
-
-                        "Phone: ${data["phoneNumber"]}",
-
-                      ),
-
-
-
-
-
-
-                      Text(
-
-                        "Date: ${data["date"]}",
-
-                      ),
-
-
-
-
-
-
-                      Text(
-
-                        "Time: ${data["time"]}",
-
-                      ),
-
-
-
-
-
-
-                      Text(
-
-                        "Status: ${data["status"]}",
-
-                      ),
-
-
-
-
-
-                    ],
-
-
-                  ),
-
-
-
-
-
-
-
-
-
-
-                  trailing:
-
-
-                  data["status"]
-                      ==
-                      "Pending"
-
-
-
-                      ?
-
-                  Row(
-
-
-
-                    mainAxisSize:
-                    MainAxisSize.min,
-
-
-
-
-                    children: [
-
-
-
-
-
-                      IconButton(
-
-
-                        icon:
-                        const Icon(
-
-                          Icons.check,
-
-                          color:
-                          Colors.green,
-
-                        ),
-
-
-
-                        onPressed: (){
-
-
-                          updateStatus(
-
-                            id,
-
-                            "Accepted",
-
-                          );
-
-
-                        },
-
-
-                      ),
-
-
-
-
-
-
-
-                      IconButton(
-
-
-
-                        icon:
-                        const Icon(
-
-                          Icons.close,
-
-                          color:
-                          Colors.red,
-
-                        ),
-
-
-
-
-                        onPressed: (){
-
-
-                          updateStatus(
-
-                            id,
-
-                            "Rejected",
-
-                          );
-
-
-                        },
-
-
-                      ),
-
-
-
-
-                    ],
-
-
-                  )
-
-
-
-                      :
-
-
-                  Text(
-
-                    data["status"],
-
-                  ),
-
-
-
-
-
-                ),
-
-
-              );
-
-
-
-            },
-
-
-          );
-
-
-
-        },
 
 
       ),
