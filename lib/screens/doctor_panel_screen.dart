@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'login_screen.dart';
+import 'doctor_edit_profile_screen.dart';
 
 
 
@@ -126,25 +127,49 @@ class _DoctorPanelScreenState
 
         actions: [
 
+          IconButton(
 
+            icon: const Icon(
+              Icons.edit,
+            ),
+
+            tooltip: "Edit Profile",
+
+            onPressed: () {
+
+              Navigator.push(
+
+                context,
+
+                MaterialPageRoute(
+
+                  builder: (_) => DoctorEditProfileScreen(
+
+                    doctorId: widget.doctorId,
+
+                    doctorData: widget.doctorData,
+
+                  ),
+
+                ),
+
+              );
+
+            },
+
+          ),
 
           IconButton(
 
-
-            icon:
-            const Icon(
+            icon: const Icon(
               Icons.logout,
             ),
 
-
-
-            onPressed: (){
-
+            onPressed: () {
 
               Navigator.pushAndRemoveUntil(
 
                 context,
-
 
                 MaterialPageRoute(
 
@@ -153,18 +178,13 @@ class _DoctorPanelScreenState
 
                 ),
 
-
-                    (route)=>false,
+                    (route) => false,
 
               );
 
-
             },
 
-
           ),
-
-
 
         ],
 

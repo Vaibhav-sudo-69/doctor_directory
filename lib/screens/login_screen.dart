@@ -6,161 +6,191 @@ import 'signup_screen.dart';
 import 'admin_login_screen.dart';
 import 'doctor_login_screen.dart';
 
-
 class LoginScreen extends StatefulWidget {
-
   const LoginScreen({super.key});
-
 
   @override
   State<LoginScreen> createState() =>
       _LoginScreenState();
+}
+
+class _LoginScreenState
+    extends State<LoginScreen> {
+
+final emailController =
+TextEditingController();
+
+final passwordController =
+TextEditingController();
+
+bool _obscurePassword = true;
+
+bool loading = false;
+
+void login() async {
+
+if (emailController.text.isEmpty ||
+passwordController.text.isEmpty) {
+
+ScaffoldMessenger.of(context)
+.showSnackBar(
+
+const SnackBar(
+
+content:
+Text("Enter all details"),
+
+),
+
+);
+
+return;
+}
+
+setState(() {
+loading = true;
+});
+
+try {
+
+await FirebaseAuth.instance
+.signInWithEmailAndPassword(
+
+email:
+emailController.text.trim(),
+
+password:
+passwordController.text.trim(),
+
+);
+
+setState(() {
+loading = false;
+});
+
+ScaffoldMessenger.of(context)
+.showSnackBar(
+
+const SnackBar(
+
+content:
+Text("Login Successful ✅"),
+
+),
+
+);
+
+Navigator.pushReplacement(
+
+context,
+
+MaterialPageRoute(
+
+builder: (_) =>
+const HomeScreen(),
+
+),
+
+);
+
+} catch (e) {
+
+setState(() {
+loading = false;
+});
+
+ScaffoldMessenger.of(context)
+.showSnackBar(
+
+const SnackBar(
+
+content:
+Text("Wrong Email or Password ❌"),
+
+),
+
+);
 
 }
 
+}
 
+// 🔐 Forgot Password
 
+void forgotPassword() async {
 
-class _LoginScreenState extends State<LoginScreen> {
+if (emailController.text.trim().isEmpty) {
 
+ScaffoldMessenger.of(context)
+.showSnackBar(
 
-  final emailController =
-  TextEditingController();
+const SnackBar(
 
+content:
+Text("Enter your email first"),
 
-  final passwordController =
-  TextEditingController();
+),
 
+);
 
-  bool _obscurePassword = true;
+return;
+}
 
+try {
 
+await FirebaseAuth.instance
+.sendPasswordResetEmail(
 
+email:
+emailController.text.trim(),
 
-  void login() async {
+);
 
+ScaffoldMessenger.of(context)
+.showSnackBar(
 
-    if (
-    emailController.text.isEmpty ||
-        passwordController.text.isEmpty
-    ) {
+const SnackBar(
 
+content:
+Text(
+"Password reset email sent ✅",
+),
 
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
+),
 
-        const SnackBar(
+);
 
-          content: Text(
-            "Enter all details",
-          ),
+}
 
-        ),
+catch (e) {
 
-      );
+ScaffoldMessenger.of(context)
+.showSnackBar(
 
+const SnackBar(
 
-      return;
+content:
+Text(
+"Unable to send reset email",
+),
 
-    }
+),
 
+);
 
+}
 
-
-    try {
-
-
-      await FirebaseAuth.instance
-          .signInWithEmailAndPassword(
-
-        email:
-        emailController.text.trim(),
-
-        password:
-        passwordController.text.trim(),
-
-      );
-
-
-
-
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-
-        const SnackBar(
-
-          content: Text(
-            "Login Successful ✅",
-          ),
-
-        ),
-
-      );
-
-
-
-
-      Navigator.pushReplacement(
-
-        context,
-
-        MaterialPageRoute(
-
-          builder: (_) =>
-          const HomeScreen(),
-
-        ),
-
-      );
-
-
-
-    }
-
-    catch (e) {
-
-
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-
-        const SnackBar(
-
-          content: Text(
-            "Wrong Email or Password ❌",
-          ),
-
-        ),
-
-      );
-
-
-    }
-
-
-  }
-
-
-
-
-
-
-
-
-
+}
   @override
   Widget build(BuildContext context) {
 
-
     return Scaffold(
 
-
       body: Container(
-
 
         width: double.infinity,
 
         height: double.infinity,
-
 
         decoration: const BoxDecoration(
 
@@ -184,40 +214,24 @@ class _LoginScreenState extends State<LoginScreen> {
 
         ),
 
-
-
-
-
-
         child: SafeArea(
-
 
           child: Center(
 
-
             child: SingleChildScrollView(
 
-
-              padding:
-              const EdgeInsets.all(20),
-
+              padding: const EdgeInsets.all(20),
 
               child: Container(
 
-
-                padding:
-                const EdgeInsets.all(25),
-
-
+                padding: const EdgeInsets.all(25),
 
                 decoration: BoxDecoration(
 
-                  color:
-                  Colors.white.withOpacity(0.15),
+                  color: Colors.white.withOpacity(.15),
 
                   borderRadius:
                   BorderRadius.circular(30),
-
 
                   border: Border.all(
 
@@ -228,58 +242,42 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 ),
 
-
-
-
-
                 child: Column(
-
 
                   mainAxisSize:
                   MainAxisSize.min,
 
-
                   children: [
-
-
 
                     const CircleAvatar(
 
-                      radius: 45,
+                      radius:45,
 
                       backgroundColor:
                       Colors.white,
-
 
                       child: Icon(
 
                         Icons.local_hospital,
 
-                        size: 50,
+                        size:50,
 
-                        color: Colors.blue,
+                        color:
+                        Colors.blue,
 
                       ),
 
                     ),
 
-
-
-
-                    const SizedBox(
-                      height: 20,
-                    ),
-
-
+                    const SizedBox(height:20),
 
                     const Text(
 
                       "Doctor Directory",
 
-
                       style: TextStyle(
 
-                        fontSize: 30,
+                        fontSize:30,
 
                         color: Colors.white,
 
@@ -290,13 +288,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     ),
 
-
-
-                    const SizedBox(
-                      height: 8,
-                    ),
-
-
+                    const SizedBox(height:8),
 
                     const Text(
 
@@ -304,52 +296,37 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       style: TextStyle(
 
-                        color: Colors.white70,
+                        color:
+                        Colors.white70,
 
-                        fontSize: 16,
+                        fontSize:16,
 
                       ),
 
                     ),
 
-
-
-
-                    const SizedBox(
-                      height: 35,
-                    ),
-
-
-
-
-
+                    const SizedBox(height:35),
 
                     TextField(
 
                       controller:
                       emailController,
 
-
                       decoration: InputDecoration(
 
-
-                        filled: true,
+                        filled:true,
 
                         fillColor:
                         Colors.white,
 
-
                         hintText:
                         "Email Address",
-
 
                         prefixIcon:
                         const Icon(
                           Icons.email,
                         ),
 
-
-
                         border:
                         OutlineInputBorder(
 
@@ -365,90 +342,60 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     ),
 
-
-
-
-
-
-                    const SizedBox(
-                      height: 20,
-                    ),
-
-
-
-
-
-
+                    const SizedBox(height:20),
 
                     TextField(
 
                       controller:
                       passwordController,
 
-
                       obscureText:
                       _obscurePassword,
 
-
                       decoration: InputDecoration(
 
-
-                        filled: true,
-
+                        filled:true,
 
                         fillColor:
                         Colors.white,
 
-
                         hintText:
                         "Password",
-
-
 
                         prefixIcon:
                         const Icon(
                           Icons.lock,
                         ),
 
-
-
-
                         suffixIcon:
                         IconButton(
-
 
                           icon: Icon(
 
                             _obscurePassword
 
-                                ? Icons.visibility_off
+                                ?
 
-                                : Icons.visibility,
+                            Icons.visibility_off
+
+                                :
+
+                            Icons.visibility,
 
                           ),
 
+                          onPressed: (){
 
-
-                          onPressed: () {
-
-
-                            setState(() {
-
+                            setState((){
 
                               _obscurePassword =
                               !_obscurePassword;
 
-
                             });
-
 
                           },
 
                         ),
-
-
-
-
 
                         border:
                         OutlineInputBorder(
@@ -465,46 +412,64 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     ),
 
+                    Align(
 
+                      alignment:
+                      Alignment.centerRight,
 
+                      child:
+                      TextButton(
 
+                        onPressed:
+                        forgotPassword,
 
+                        child:
+                        const Text(
 
+                          "Forgot Password?",
 
-                    const SizedBox(
-                      height: 30,
+                          style: TextStyle(
+
+                            color:
+                            Colors.white,
+
+                          ),
+
+                        ),
+
+                      ),
+
                     ),
 
-
-
-
-
-
+                    const SizedBox(height:15),
 
                     SizedBox(
 
                       width:
                       double.infinity,
 
-                      height: 55,
-
-
+                      height:55,
 
                       child:
                       ElevatedButton(
 
-
                         onPressed:
+
+                        loading
+
+                            ?
+
+                        null
+
+                            :
+
                         login,
-
-
 
                         style:
                         ElevatedButton.styleFrom(
 
                           backgroundColor:
                           Colors.blue.shade800,
-
 
                           shape:
                           RoundedRectangleBorder(
@@ -516,18 +481,31 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         ),
 
-
-
                         child:
+
+                        loading
+
+                            ?
+
+                        const CircularProgressIndicator(
+
+                          color:
+                          Colors.white,
+
+                        )
+
+                            :
+
                         const Text(
 
                           "LOGIN",
 
                           style: TextStyle(
 
-                            fontSize: 18,
+                            fontSize:18,
 
-                            color: Colors.white,
+                            color:
+                            Colors.white,
 
                             fontWeight:
                             FontWeight.bold,
@@ -540,27 +518,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     ),
 
-
-
-
-
-
-
-
-                    const SizedBox(
-                      height:20,
-                    ),
-
-
-
-
-
+                    const SizedBox(height:20),
 
                     TextButton(
 
-
-                      onPressed: () {
-
+                      onPressed: (){
 
                         Navigator.push(
 
@@ -575,10 +537,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         );
 
-
                       },
-
-
 
                       child: const Text(
 
@@ -586,7 +545,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         style: TextStyle(
 
-                          color: Colors.white,
+                          color:
+                          Colors.white,
 
                           fontSize:16,
 
@@ -596,50 +556,37 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     ),
 
-
-
-
-
-
                     const Divider(
                       color: Colors.white,
                     ),
 
-
-
-
-
-
-
-
                     TextButton.icon(
 
-
-                      icon: const Icon(
+                      icon:
+                      const Icon(
 
                         Icons.medical_services,
 
-                        color: Colors.white,
+                        color:
+                        Colors.white,
 
                       ),
 
-
-
-                      label: const Text(
+                      label:
+                      const Text(
 
                         "Doctor Login",
 
-                        style:
-                        TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+
+                          color:
+                          Colors.white,
+
                         ),
 
                       ),
 
-
-
-                      onPressed: () {
-
+                      onPressed: (){
 
                         Navigator.push(
 
@@ -654,48 +601,37 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         );
 
-
                       },
 
                     ),
 
-
-
-
-
-
-
                     TextButton.icon(
 
-
-                      icon: const Icon(
+                      icon:
+                      const Icon(
 
                         Icons.admin_panel_settings,
 
-                        color: Colors.white,
+                        color:
+                        Colors.white,
 
                       ),
 
-
-
-
-                      label: const Text(
+                      label:
+                      const Text(
 
                         "Admin Login",
 
-                        style:
-                        TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+
+                          color:
+                          Colors.white,
+
                         ),
 
                       ),
 
-
-
-
-
-                      onPressed: () {
-
+                      onPressed: (){
 
                         Navigator.push(
 
@@ -710,12 +646,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         );
 
-
                       },
 
                     ),
-
-
 
                   ],
 
@@ -734,6 +667,5 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
   }
-
 
 }
