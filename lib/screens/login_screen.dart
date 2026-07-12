@@ -6,6 +6,8 @@ import 'signup_screen.dart';
 import 'admin_login_screen.dart';
 import 'doctor_login_screen.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+
 
 class LoginScreen extends StatefulWidget {
 
@@ -380,168 +382,73 @@ class _LoginScreenState extends State<LoginScreen> {
 
 
 
-                    TextField(
-
-                      controller:
-                      passwordController,
-
-
-                      obscureText:
-                      _obscurePassword,
-
-
-                      decoration: InputDecoration(
-
-
-                        filled: true,
-
-
-                        fillColor:
-                        Colors.white,
-
-
-                        hintText:
-                        "Password",
-
-
-
-                        prefixIcon:
-                        const Icon(
-                          Icons.lock,
-                        ),
-
-
-
-
-                        suffixIcon:
-                        IconButton(
-
-
-                          icon: Icon(
-
-                            _obscurePassword
-
-                                ? Icons.visibility_off
-
-                                : Icons.visibility,
-
-                          ),
-
-
-
-                          onPressed: () {
-
-
-                            setState(() {
-
-
-                              _obscurePassword =
-                              !_obscurePassword;
-
-
-                            });
-
-
-                          },
-
-                        ),
-
-
-
-
-
-                        border:
-                        OutlineInputBorder(
-
-                          borderRadius:
-                          BorderRadius.circular(18),
-
-                          borderSide:
-                          BorderSide.none,
-
-                        ),
-
-                      ),
-
-                    ),
-
-
-
-
-
-
-
-                    const SizedBox(
-                      height: 30,
-                    ),
-
-
-
-
-
-
-
-                    SizedBox(
-
-                      width:
-                      double.infinity,
-
-                      height: 55,
-
-
-
-                      child:
-                      ElevatedButton(
-
-
-                        onPressed:
-                        login,
-
-
-
-                        style:
-                        ElevatedButton.styleFrom(
-
-                          backgroundColor:
-                          Colors.blue.shade800,
-
-
-                          shape:
-                          RoundedRectangleBorder(
-
-                            borderRadius:
-                            BorderRadius.circular(18),
-
-                          ),
-
-                        ),
-
-
-
-                        child:
-                        const Text(
-
-                          "LOGIN",
-
-                          style: TextStyle(
-
-                            fontSize: 18,
-
-                            color: Colors.white,
-
-                            fontWeight:
-                            FontWeight.bold,
-
-                          ),
-
-                        ),
-
-                      ),
-
-                    ),
-
-
-
+                   TextField(
+  controller: passwordController,
+  obscureText: _obscurePassword,
+  decoration: InputDecoration(
+    filled: true,
+    fillColor: Colors.white,
+    hintText: "Password",
+    prefixIcon: const Icon(Icons.lock),
+    suffixIcon: IconButton(
+      icon: Icon(
+        _obscurePassword
+            ? Icons.visibility_off
+            : Icons.visibility,
+      ),
+      onPressed: () {
+        setState(() {
+          _obscurePassword = !_obscurePassword;
+        });
+      },
+    ),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(18),
+      borderSide: BorderSide.none,
+    ),
+  ),
+),
+
+Align(
+  alignment: Alignment.centerRight,
+  child: TextButton(
+    onPressed: () {
+      
+    },
+    child: const Text(
+      "Forgot Password?",
+      style: TextStyle(
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
+        fontSize: 15,
+      ),
+    ),
+  ),
+),
+
+const SizedBox(height: 20),
+
+SizedBox(
+  width: double.infinity,
+  height: 55,
+  child: ElevatedButton(
+    onPressed: login,
+    style: ElevatedButton.styleFrom(
+      backgroundColor: Colors.blue.shade800,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+      ),
+    ),
+    child: const Text(
+      "LOGIN",
+      style: TextStyle(
+        fontSize: 18,
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  ),
+),
 
 
 
