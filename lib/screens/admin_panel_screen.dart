@@ -113,28 +113,63 @@ Widget build(BuildContext context) {
   return Scaffold(
     backgroundColor: const Color(0xffF4F8FB),
 
-    body: StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection("doctors")
-          .snapshots(),
-      builder: (context, doctorSnapshot) {
-        return StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection("appointments")
-              .snapshots(),
-          builder: (context, appointmentSnapshot) {
-            if (!doctorSnapshot.hasData ||
-                !appointmentSnapshot.hasData) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
+body: StreamBuilder<QuerySnapshot>(
+stream: FirebaseFirestore.instance
+.collection("doctors")
+.snapshots(),
+builder: (context, doctorSnapshot) {
 
-            int doctorCount =
-                doctorSnapshot.data!.docs.length;
+return StreamBuilder<QuerySnapshot>(
+stream: FirebaseFirestore.instance
+.collection("appointments")
+.snapshots(),
+builder: (context, appointmentSnapshot) {
 
-            int appointmentCount =
-                appointmentSnapshot.data!.docs.length;
+return StreamBuilder<QuerySnapshot>(
+stream: FirebaseFirestore.instance
+.collection("users")
+.snapshots(),
+builder: (context, userSnapshot) {
+
+return StreamBuilder<QuerySnapshot>(
+stream: FirebaseFirestore.instance
+    .collection("doctor_requests")
+    .where("status", isEqualTo: "Pending")
+    .snapshots(),
+builder: (context, requestSnapshot) {
+
+return StreamBuilder<QuerySnapshot>(
+stream: FirebaseFirestore.instance
+.collection("reviews")
+.snapshots(),
+builder: (context, reviewSnapshot) {
+
+if (!doctorSnapshot.hasData ||
+!appointmentSnapshot.hasData ||
+!userSnapshot.hasData ||
+!requestSnapshot.hasData ||
+!reviewSnapshot.hasData) {
+
+return const Center(
+child: CircularProgressIndicator(),
+);
+
+}
+
+int doctorCount =
+doctorSnapshot.data!.docs.length;
+
+int appointmentCount =
+appointmentSnapshot.data!.docs.length;
+
+int userCount =
+userSnapshot.data!.docs.length;
+
+int requestCount =
+requestSnapshot.data!.docs.length;
+
+int reviewCount =
+reviewSnapshot.data!.docs.length;
 
             return SingleChildScrollView(
               child: Column(
@@ -296,30 +331,81 @@ Widget build(BuildContext context) {
                   ),
 
                   const SizedBox(height: 25),
+Padding(
+padding: const EdgeInsets.symmetric(horizontal: 15),
 
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 15),
+child: Column(
 
-                    child: Row(
-                      children: [
+children: [
 
-                        dashboardCard(
-                          "Doctors",
-                          Icons.medical_services,
-                          doctorCount,
-                          Colors.blue,
-                        ),
+Row(
 
-                        dashboardCard(
-                          "Appointments",
-                          Icons.calendar_month,
-                          appointmentCount,
-                          Colors.orange,
-                        ),
-                      ],
-                    ),
-                  ),
+children: [
+
+dashboardCard(
+"Doctors",
+Icons.medical_services,
+doctorCount,
+Colors.blue,
+),
+
+dashboardCard(
+"Appointments",
+Icons.calendar_month,
+appointmentCount,
+Colors.orange,
+),
+
+],
+
+),
+
+Row(
+
+children: [
+
+dashboardCard(
+"Users",
+Icons.people,
+userCount,
+Colors.green,
+),
+
+dashboardCard(
+"Reviews",
+Icons.star,
+reviewCount,
+Colors.amber,
+),
+
+],
+
+),
+
+Row(
+
+children: [
+
+dashboardCard(
+"Pending",
+Icons.pending_actions,
+requestCount,
+Colors.deepPurple,
+),
+
+const Expanded(
+child: SizedBox(),
+),
+
+],
+
+),
+
+],
+
+),
+
+),
 
                   const SizedBox(height: 20),
 
@@ -412,10 +498,16 @@ Widget build(BuildContext context) {
                 ],
               ),
             );
-          },
-        );
-      },
-    ),
+},
+);
+},
+);
+},
+);
+},
+);
+},
+),
   );
 }
 }
