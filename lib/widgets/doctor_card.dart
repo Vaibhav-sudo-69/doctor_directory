@@ -121,7 +121,7 @@ class DoctorCard extends StatelessWidget {
         margin:
         const EdgeInsets.only(bottom:18),
 
-        elevation:5,
+        elevation:8,
 
 
         shape:
@@ -136,8 +136,10 @@ class DoctorCard extends StatelessWidget {
 
         child: Padding(
 
-          padding:
-          const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 14,
+          ),
 
 
 
@@ -323,16 +325,21 @@ class DoctorCard extends StatelessWidget {
 
 
 
-                        return Text(
-
-                          "⭐ ${avg.toStringAsFixed(1)} (${reviews.length})",
-
-                          style:
-                          const TextStyle(
-                            fontWeight:
-                            FontWeight.bold,
-                          ),
-
+                        return Row(
+                          children: [
+                            const Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                              size: 18,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              "${avg.toStringAsFixed(1)} (${reviews.length})",
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         );
 
                       },
@@ -349,41 +356,53 @@ class DoctorCard extends StatelessWidget {
 
 
                     Text(
-
                       doctor.specialization,
-
-                      style:
-                      const TextStyle(
-                        color:Colors.blue,
+                      style: const TextStyle(
+                        color: Colors.blue,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
                       ),
-
                     ),
 
+                    const SizedBox(height: 6),
 
-
-
-                    const SizedBox(height:8),
-
-
-
-
-                    Text(
-                      doctor.clinicName,
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.local_hospital,
+                          size: 16,
+                          color: Colors.grey,
+                        ),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          child: Text(
+                            doctor.clinicName,
+                            style: const TextStyle(
+                              color: Colors.black87,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
                     ),
 
+                    const SizedBox(height: 6),
 
-
-
-                    const SizedBox(height:8),
-
-
-
-
-
-                    Text(
-
-                      "${doctor.experience} Years Experience",
-
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.work_outline,
+                          size: 16,
+                          color: Colors.grey,
+                        ),
+                        const SizedBox(width: 5),
+                        Text(
+                          "${doctor.experience} Years Experience",
+                          style: const TextStyle(
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ],
                     ),
 
 
@@ -402,8 +421,8 @@ class DoctorCard extends StatelessWidget {
 
               CircleAvatar(
 
-                backgroundColor:
-                Colors.green.shade100,
+                backgroundColor: Colors.green.shade50,
+                radius: 24,
 
 
                 child:

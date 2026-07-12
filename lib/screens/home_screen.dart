@@ -36,7 +36,58 @@ class _HomeScreenState extends State<HomeScreen> {
   String selectedCategory = "All";
 
   String searchText = "";
+  Widget _statItem(
+      IconData icon,
+      String value,
+      String title,
+      ) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 14,
+        vertical: 10,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.18),
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Row(
+        children: [
 
+          Icon(
+            icon,
+            color: Colors.white,
+          ),
+
+          const SizedBox(width: 8),
+
+          Column(
+            crossAxisAlignment:
+            CrossAxisAlignment.start,
+            children: [
+
+              Text(
+                value,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
+
+              Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white70,
+                ),
+              ),
+
+            ],
+          ),
+
+        ],
+      ),
+    );
+  }
 
 
   final List<String> categories = [
@@ -249,47 +300,27 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       child:
                       Container(
-
-
-                        padding:
-                        const EdgeInsets.all(5),
-
-
-
-                        decoration:
-                        const BoxDecoration(
-
-                          color:
-                          Colors.red,
-
-                          shape:
-                          BoxShape.circle,
-
+                        constraints: const BoxConstraints(
+                          minWidth: 18,
+                          minHeight: 18,
                         ),
-
-
-
-                        child:
-                        Text(
-
-
-                          count.toString(),
-
-
-                          style:
-                          const TextStyle(
-
-                            color:
-                            Colors.white,
-
-                            fontSize:10,
-
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 2,
                           ),
-
-
                         ),
-
-
+                        child: Text(
+                          count > 99 ? "99+" : count.toString(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
 
 
@@ -559,25 +590,121 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
 
-            const Text(
-
-              "👋 Hello",
-
-              style:
-              TextStyle(
-
-                fontSize:28,
-
-                fontWeight:
-                FontWeight.bold,
-
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xff1565C0),
+                    Color(0xff42A5F5),
+                    Color(0xff90CAF9),
+                  ],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.blue.withOpacity(0.25),
+                    blurRadius: 18,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+                borderRadius: BorderRadius.circular(20),
               ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
 
+                  const Text(
+                    "👋 Welcome Back",
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 17,
+                      letterSpacing: 0.8,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  Text(
+                    user?.displayName?.isNotEmpty == true
+                        ? user!.displayName!
+                        : (user?.email?.split('@').first ?? "User"),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  const Text(
+                    "Find the best doctors near you.",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection("doctors")
+                        .snapshots(),
+                    builder: (context, doctorSnapshot) {
+
+                      int doctorCount = doctorSnapshot.data?.docs.length ?? 0;
+
+                      return StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection("appointments")
+                            .where(
+                          "userEmail",
+                          isEqualTo: user!.email,
+                        )
+                            .where(
+                          "status",
+                          isEqualTo: "Pending",
+                        )
+                            .snapshots(),
+                        builder: (context, appointmentSnapshot) {
+
+                          int pendingCount =
+                              appointmentSnapshot.data?.docs.length ?? 0;
+
+                          return Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                            children: [
+
+                              _statItem(
+                                Icons.local_hospital,
+                                "$doctorCount",
+                                "Doctors",
+                              ),
+
+                              _statItem(
+                                Icons.pending_actions,
+                                "$pendingCount",
+                                "Pending",
+                              ),
+
+                            ],
+                          );
+                        },
+                      );
+                    },
+                  ),
+
+                ],
+              ),
             ),
 
-
-
-            const SizedBox(height:20),
+            const SizedBox(height: 20),
 
 
 

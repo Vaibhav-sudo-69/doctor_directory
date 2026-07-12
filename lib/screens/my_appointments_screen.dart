@@ -4,10 +4,21 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 
 
-class MyAppointmentsScreen extends StatelessWidget {
-
-
+class MyAppointmentsScreen extends StatefulWidget {
   const MyAppointmentsScreen({super.key});
+
+  @override
+  State<MyAppointmentsScreen> createState() =>
+      _MyAppointmentsScreenState();
+}
+
+class _MyAppointmentsScreenState
+    extends State<MyAppointmentsScreen> {
+
+  String searchText = "";
+
+
+
 
 
 
@@ -155,8 +166,27 @@ class MyAppointmentsScreen extends StatelessWidget {
 
 
 
-      body:
-      StreamBuilder<QuerySnapshot>(
+      body: Column(
+          children: [
+
+      Padding(
+      padding: const EdgeInsets.all(12),
+      child: TextField(
+        decoration: const InputDecoration(
+          hintText: "Search Doctor...",
+          prefixIcon: Icon(Icons.search),
+          border: OutlineInputBorder(),
+        ),
+        onChanged: (value) {
+          setState(() {
+            searchText = value.toLowerCase();
+          });
+        },
+      ),
+    ),
+
+    Expanded(
+    child: StreamBuilder<QuerySnapshot>(
 
 
 
@@ -253,8 +283,16 @@ class MyAppointmentsScreen extends StatelessWidget {
 
 
 
-          final appointments =
-              snapshot.data!.docs;
+    final appointments = snapshot.data!.docs.where((doc) {
+
+    final data = doc.data() as Map<String, dynamic>;
+
+    final doctor =
+    (data["doctorName"] ?? "").toString().toLowerCase();
+
+    return doctor.contains(searchText);
+
+    }).toList();
 
 
 
@@ -548,87 +586,57 @@ class MyAppointmentsScreen extends StatelessWidget {
 
 
 
-                  trailing:
-                  IconButton(
-
-
-                    icon:
-                    const Icon(
-
-
-                      Icons.delete,
-
-
-                      color:
-                      Colors.red,
-
-
+                  trailing: status == "Pending"
+                      ? IconButton(
+                    icon: const Icon(
+                      Icons.cancel,
+                      color: Colors.red,
                     ),
+                    onPressed: () async {
 
-
-
-
-
-
-
-
-                    onPressed:() async {
-
-
-
-
-
-                      await FirebaseFirestore.instance
-
-
-                          .collection("appointments")
-
-
-                          .doc(
-
-                        appointments[index].id,
-
-                      )
-
-
-                          .delete();
-
-
-
-
-
-
-
-
-
-                      ScaffoldMessenger.of(context)
-
-                          .showSnackBar(
-
-
-                        const SnackBar(
-
-
-                          content:
-                          Text(
-
-                            "Appointment Deleted ✅",
-
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text("Cancel Appointment"),
+                          content: const Text(
+                            "Are you sure you want to cancel this appointment?",
                           ),
+                          actions: [
 
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context, false);
+                              },
+                              child: const Text("No"),
+                            ),
 
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(context, true);
+                              },
+                              child: const Text("Yes"),
+                            ),
+
+                          ],
                         ),
-
-
-
                       );
 
+                      if (confirm == true) {
 
+                        await FirebaseFirestore.instance
+                            .collection("appointments")
+                            .doc(appointments[index].id)
+                            .delete();
 
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Appointment Cancelled ✅"),
+                          ),
+                        );
+                      }
                     },
-
-
-                  ),
+                  )
+                      : null,
 
 
 
@@ -652,12 +660,11 @@ class MyAppointmentsScreen extends StatelessWidget {
 
         },
 
+    ),
+    ),
 
-
+          ],
       ),
-
-
-
 
     );
 

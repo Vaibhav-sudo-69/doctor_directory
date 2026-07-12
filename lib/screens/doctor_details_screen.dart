@@ -45,12 +45,15 @@ class _DoctorDetailsScreenState
 
     return Card(
 
+      margin: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 8,
+      ),
+
       color:
       const Color(0xffFAEEFF),
 
 
-      margin:
-      const EdgeInsets.only(bottom:12),
 
 
       child:
@@ -364,67 +367,93 @@ class _DoctorDetailsScreenState
 
 
             CircleAvatar(
-
-              radius:60,
-
-
-              backgroundImage:
-              AssetImage(
-                widget.doctor.image,
-              ),
-
+              radius: 65,
+              backgroundImage: AssetImage(widget.doctor.image),
             ),
 
-
-
-
-            const SizedBox(height:15),
-
-
-
-
+            const SizedBox(height: 18),
 
             Text(
-
               widget.doctor.name,
-
-
-              style:
-              const TextStyle(
-
-                fontSize:28,
-
-                fontWeight:
-                FontWeight.bold,
-
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
               ),
-
             ),
 
+            const SizedBox(height: 6),
 
-
-
-
-            Text(
-
-              widget.doctor.specialization,
-
-
-              style:
-              const TextStyle(
-
-                color:
-                Colors.blue,
-
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 6,
               ),
-
+              decoration: BoxDecoration(
+                color: Colors.blue.shade50,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                widget.doctor.specialization,
+                style: const TextStyle(
+                  color: Colors.blue,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                ),
+              ),
             ),
 
+            const SizedBox(height: 12),
 
+            StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection("reviews")
+                  .where(
+                "doctorEmail",
+                isEqualTo: widget.doctor.email,
+              )
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return const SizedBox();
+                }
 
+                final reviews = snapshot.data!.docs;
 
-            const SizedBox(height:25),
+                double avg = 0;
 
+                for (var review in reviews) {
+                  final data = review.data() as Map<String, dynamic>;
+                  avg += (data["rating"] ?? 0).toDouble();
+                }
+
+                if (reviews.isNotEmpty) {
+                  avg /= reviews.length;
+                }
+
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.star,
+                      color: Colors.amber,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      "${avg.toStringAsFixed(1)} (${reviews.length} Reviews)",
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+
+            const SizedBox(height: 25),
 
 
 
@@ -545,6 +574,7 @@ class _DoctorDetailsScreenState
               ),
 
             ),
+            const SizedBox(height: 12),
 
 
 
@@ -611,77 +641,80 @@ class _DoctorDetailsScreenState
 
 
                     return Card(
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      elevation: 3,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      color: Colors.white,
 
-                      color:
-                      const Color(0xffFAEEFF),
+                      child: Padding(
+                        padding: const EdgeInsets.all(15),
 
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
 
-                      child:
-                      ListTile(
-
-
-                        leading:
-                        const Icon(Icons.person),
-
-
-
-                        title:
-                        Text(
-                          data["userName"],
-                        ),
-
-
-
-
-                        subtitle:
-                        Column(
-
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
-
-
-                          children:[
-
-
+                          children: [
 
                             Row(
+                              children: [
 
-                              children:
+                                CircleAvatar(
+                                  radius: 26,
+                                  backgroundColor: Colors.blue.shade50,
+                                  child: Text(
+                                    data["userName"][0].toUpperCase(),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                ),
 
-                              List.generate(5,(i){
+                                const SizedBox(width: 12),
 
-                                return Icon(
+                                Expanded(
+                                  child: Text(
+                                    data["userName"],
+                                    style: const TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
 
-                                  i < rating
-                                      ? Icons.star
-                                      : Icons.star_border,
-
-
-                                  color:
-                                  Colors.orange,
-
-
-                                  size:18,
-
-                                );
-
-                              }),
-
+                              ],
                             ),
 
+                            const SizedBox(height: 10),
 
+                            Row(
+                              children: List.generate(5, (i) {
+                                return Icon(
+                                  i < rating ? Icons.star : Icons.star_border,
+                                  color: Colors.orange,
+                                  size: 20,
+                                );
+                              }),
+                            ),
+
+                            const SizedBox(height: 10),
 
                             Text(
                               data["reviewText"],
-                            ),
-
+                              style: const TextStyle(
+                                color: Colors.black54,
+                                fontSize: 15,
+                                height: 1.4,
+                              ),
+                            )
 
                           ],
-
                         ),
-
                       ),
-
                     );
 
                   },
@@ -696,80 +729,75 @@ class _DoctorDetailsScreenState
 
 
 
+            const SizedBox(height: 20),
+            Column(
+              children: [
 
-            SizedBox(
-
-              width:double.infinity,
-
-              child:
-              ElevatedButton.icon(
-
-                icon:
-                const Icon(Icons.call),
-
-                label:
-                const Text("CALL NOW"),
-
-
-                onPressed:() async{
-
-
-                  await launchUrl(
-
-                    Uri.parse(
-                        "tel:${widget.doctor.phoneNumber}"
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
                     ),
+                    icon: const Icon(Icons.call),
+                    label: const Text(
+                      "CALL NOW",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    onPressed: () async {
+                      await launchUrl(
+                        Uri.parse("tel:${widget.doctor.phoneNumber}"),
+                      );
+                    },
+                  ),
+                ),
 
-                  );
+                const SizedBox(height: 12),
 
-                },
-
-              ),
-
-            ),
-
-
-
-
-
-
-            SizedBox(
-
-              width:double.infinity,
-
-              child:
-              ElevatedButton.icon(
-
-                icon:
-                const Icon(Icons.calendar_month),
-
-                label:
-                const Text("BOOK APPOINTMENT"),
-
-
-                onPressed:(){
-
-
-                  Navigator.push(
-
-                    context,
-
-                    MaterialPageRoute(
-
-                      builder:(_)=>
-                          AppointmentScreen(
-                            doctor:widget.doctor,
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    icon: const Icon(Icons.calendar_month),
+                    label: const Text(
+                      "BOOK APPOINTMENT",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AppointmentScreen(
+                            doctor: widget.doctor,
                           ),
-
-                    ),
-
-                  );
-
-                },
-
-              ),
-
-            ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
+            )
 
 
 

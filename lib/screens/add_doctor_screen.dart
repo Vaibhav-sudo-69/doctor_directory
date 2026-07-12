@@ -15,6 +15,7 @@ final passwordController = TextEditingController();
 final specializationController = TextEditingController();
 final clinicController = TextEditingController();
 final phoneController = TextEditingController();
+final mapController = TextEditingController();
 final addressController = TextEditingController();
 final timingsController = TextEditingController();
 final qualificationController = TextEditingController();
@@ -134,6 +135,7 @@ Widget build(BuildContext context) {
             phoneController,
             keyboardType: TextInputType.phone,
           ),
+
 
           inputBox(
             "Address",
