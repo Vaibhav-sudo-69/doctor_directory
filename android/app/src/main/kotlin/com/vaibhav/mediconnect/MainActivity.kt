@@ -1,4 +1,4 @@
-package com.vaibhav.doctor_directory
+package com.vaibhav.mediconnect
 
 import io.flutter.embedding.android.FlutterActivity
 

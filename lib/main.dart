@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 import 'screens/login_screen.dart';
+import 'screens/splash_screen.dart';
 
 import 'data/user_data.dart';
 import 'data/doctor_data.dart';
@@ -55,7 +56,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
 
 
-      title: "City Doctor Directory",
+      title: "MediConnect",
 
 
       theme: ThemeData(
@@ -68,7 +69,7 @@ class MyApp extends StatelessWidget {
 
 
 
-      home: const LoginScreen(),
+      home: const SplashScreen(),
 
 
     );
