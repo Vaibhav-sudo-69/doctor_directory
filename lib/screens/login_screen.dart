@@ -228,7 +228,7 @@ Text(
 
                 decoration: BoxDecoration(
 
-                  color: Colors.white.withOpacity(.15),
+                  color: Colors.white.withOpacity(.18),
 
                   borderRadius:
                   BorderRadius.circular(30),
@@ -249,31 +249,36 @@ Text(
 
                   children: [
 
-                    const CircleAvatar(
-
-                      radius:45,
-
-                      backgroundColor:
-                      Colors.white,
-
-                      child: Icon(
-
-                        Icons.local_hospital,
-
-                        size:50,
-
-                        color:
-                        Colors.blue,
-
+                    Container(
+                      width: 95,
+                      height: 95,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: const LinearGradient(
+                          colors: [
+                            Color(0xff1976D2),
+                            Color(0xff42A5F5),
+                          ],
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.blueAccent.withOpacity(0.35),
+                            blurRadius: 18,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
                       ),
-
+                      child: const Icon(
+                        Icons.local_hospital_rounded,
+                        color: Colors.white,
+                        size: 52,
+                      ),
                     ),
-
                     const SizedBox(height:20),
 
                     const Text(
 
-                      "Doctor Directory",
+                      "MediConnect",
 
                       style: TextStyle(
 
@@ -316,8 +321,20 @@ Text(
 
                         filled:true,
 
-                        fillColor:
-                        Colors.white,
+                        fillColor: Colors.white.withOpacity(0.96),
+
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(18),
+                          borderSide: BorderSide.none,
+                        ),
+
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(18),
+                          borderSide: const BorderSide(
+                            color: Color(0xff1976D2),
+                            width: 2,
+                          ),
+                        ),
 
                         hintText:
                         "Email Address",
@@ -356,8 +373,20 @@ Text(
 
                         filled:true,
 
-                        fillColor:
-                        Colors.white,
+                        fillColor: Colors.white.withOpacity(0.96),
+
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(18),
+                          borderSide: BorderSide.none,
+                        ),
+
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(18),
+                          borderSide: const BorderSide(
+                            color: Color(0xff1976D2),
+                            width: 2,
+                          ),
+                        ),
 
                         hintText:
                         "Password",
@@ -465,20 +494,13 @@ Text(
 
                         login,
 
-                        style:
-                        ElevatedButton.styleFrom(
-
-                          backgroundColor:
-                          Colors.blue.shade800,
-
-                          shape:
-                          RoundedRectangleBorder(
-
-                            borderRadius:
-                            BorderRadius.circular(18),
-
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xff1976D2),
+                          elevation: 8,
+                          shadowColor: Colors.blueAccent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18),
                           ),
-
                         ),
 
                         child:

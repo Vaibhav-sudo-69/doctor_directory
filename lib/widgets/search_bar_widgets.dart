@@ -14,9 +14,22 @@ class SearchBarWidget extends StatelessWidget {
       onChanged: onChanged,
       decoration: InputDecoration(
         hintText: "Search doctors...",
-        prefixIcon: const Icon(Icons.search),
+        prefixIcon: Container(
+          margin: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: Colors.blue.shade50,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(
+            Icons.search,
+            color: Colors.blue.shade700,
+          ),
+        ),
         filled: true,
         fillColor: Colors.white,
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 18,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide.none,

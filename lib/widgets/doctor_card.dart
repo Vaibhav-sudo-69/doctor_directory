@@ -121,7 +121,8 @@ class DoctorCard extends StatelessWidget {
         margin:
         const EdgeInsets.only(bottom:18),
 
-        elevation:8,
+        elevation:4,
+        color: Colors.white,
 
 
         shape:
@@ -154,15 +155,53 @@ class DoctorCard extends StatelessWidget {
 
 
 
-              CircleAvatar(
+              Stack(
+                children: [
 
-                radius:38,
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(18),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.10),
+                          blurRadius: 12,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(18),
+                      child: Image.asset(
+                        doctor.image,
+                        width: 90,
+                        height: 90,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
 
-                backgroundImage:
-                AssetImage(
-                  doctor.image,
-                ),
+                  Positioned(
+                    right: -2,
+                    bottom: -2,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: Colors.green,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: Colors.white,
+                          width: 2,
+                        ),
+                      ),
+                      child: const Icon(
+                        Icons.verified,
+                        color: Colors.white,
+                        size: 14,
+                      ),
+                    ),
+                  ),
 
+                ],
               ),
 
 
@@ -193,19 +232,13 @@ class DoctorCard extends StatelessWidget {
                         Expanded(
 
                           child: Text(
-
                             doctor.name,
-
-                            style:
-                            const TextStyle(
-
-                              fontSize:20,
-
-                              fontWeight:
-                              FontWeight.bold,
-
+                            style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.3,
+                              color: Color(0xff1F2937),
                             ),
-
                           ),
 
                         ),
@@ -234,23 +267,18 @@ class DoctorCard extends StatelessWidget {
                                     snapshot.data!.exists;
 
 
-                            return IconButton(
-
-                              icon: Icon(
-
-                                fav
-                                    ? Icons.favorite
-                                    : Icons.favorite_border,
-
-                                color:
-                                Colors.red,
-
+                            return Container(
+                              decoration: BoxDecoration(
+                                color: Colors.red.shade50,
+                                borderRadius: BorderRadius.circular(14),
                               ),
-
-
-                              onPressed:
-                              toggleFavorite,
-
+                              child: IconButton(
+                                icon: Icon(
+                                  fav ? Icons.favorite : Icons.favorite_border_rounded,
+                                  color: Colors.redAccent,
+                                ),
+                                onPressed: toggleFavorite,
+                              ),
                             );
 
                           },
@@ -334,9 +362,11 @@ class DoctorCard extends StatelessWidget {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              "${avg.toStringAsFixed(1)} (${reviews.length})",
+                              "${avg.toStringAsFixed(1)} (${reviews.length} Reviews)",
                               style: const TextStyle(
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xff4B5563),
+                                fontSize: 14,
                               ),
                             ),
                           ],
@@ -355,12 +385,22 @@ class DoctorCard extends StatelessWidget {
 
 
 
-                    Text(
-                      doctor.specialization,
-                      style: const TextStyle(
-                        color: Colors.blue,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade50,
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Text(
+                        doctor.specialization,
+                        style: TextStyle(
+                          color: Colors.blue.shade800,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
                       ),
                     ),
 
@@ -404,6 +444,63 @@ class DoctorCard extends StatelessWidget {
                         ),
                       ],
                     ),
+                    const SizedBox(height: 10),
+
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.location_on,
+                          color: Colors.redAccent,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          child: Text(
+                            doctor.address,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => DoctorDetailsScreen(
+                                doctor: doctor,
+                              ),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.calendar_month),
+                        label: const Text(
+                          "Book Appointment",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xff1976D2),
+
+                          elevation: 3,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ),
 
 
                   ],
@@ -419,31 +516,30 @@ class DoctorCard extends StatelessWidget {
 
 
 
-              CircleAvatar(
-
-                backgroundColor: Colors.green.shade50,
-                radius: 24,
-
-
-                child:
-                IconButton(
-
-                  icon:
-                  const Icon(
-
-                    Icons.call,
-
-                    color:
-                    Colors.green,
-
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.green.shade400,
+                      Colors.green.shade700,
+                    ],
                   ),
-
-
-                  onPressed:
-                  callDoctor,
-
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.green.withOpacity(0.30),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
                 ),
-
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.call_rounded,
+                    color: Colors.white,
+                  ),
+                  onPressed: callDoctor,
+                ),
               ),
 
 

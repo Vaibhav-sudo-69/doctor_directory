@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'home_screen.dart';
+import 'login_screen.dart';
 
 
 class SignupScreen extends StatefulWidget {
@@ -200,20 +201,6 @@ class _SignupScreenState
     return Scaffold(
 
 
-      appBar: AppBar(
-
-        title:
-        const Text(
-          "Signup",
-        ),
-
-        backgroundColor:
-        Colors.blue,
-
-        foregroundColor:
-        Colors.white,
-
-      ),
 
 
 
@@ -221,14 +208,72 @@ class _SignupScreenState
 
 
 
-      body: Padding(
 
-        padding:
-        const EdgeInsets.all(20),
+        body: Container(
 
+            width: double.infinity,
 
+            height: double.infinity,
 
-        child: Column(
+            decoration: const BoxDecoration(
+
+              gradient: LinearGradient(
+
+                colors: [
+
+                  Color(0xff1565C0),
+
+                  Color(0xff42A5F5),
+
+                  Color(0xff90CAF9),
+
+                ],
+
+                begin: Alignment.topLeft,
+
+                end: Alignment.bottomRight,
+
+              ),
+
+            ),
+
+            child: SafeArea(
+
+              child: Padding(
+
+                padding: const EdgeInsets.all(20),
+
+                child: Container(
+
+                  padding: const EdgeInsets.all(25),
+
+                  decoration: BoxDecoration(
+
+                    color: Colors.white.withOpacity(.18),
+
+                    borderRadius: BorderRadius.circular(30),
+
+                    border: Border.all(
+                      color: Colors.white.withOpacity(.45),
+                    ),
+
+                    boxShadow: [
+
+                      BoxShadow(
+
+                        color: Colors.black.withOpacity(.15),
+
+                        blurRadius: 25,
+
+                        offset: const Offset(0, 10),
+
+                      ),
+
+                    ],
+
+                  ),
+
+                  child: Column(
 
           mainAxisAlignment:
           MainAxisAlignment.center,
@@ -239,17 +284,41 @@ class _SignupScreenState
 
 
 
+            const Icon(
+              Icons.person_add_alt_1_rounded,
+              color: Colors.white,
+              size: 70,
+            ),
+
+            const SizedBox(height: 20),
+
             const Text(
 
-              "Create Account",
+              "Create Your Account",
 
-              style:
-              TextStyle(
+              style: TextStyle(
 
-                fontSize: 28,
+                fontSize: 30,
 
-                fontWeight:
-                FontWeight.bold,
+                color: Colors.white,
+
+                fontWeight: FontWeight.bold,
+
+              ),
+
+            ),
+
+            const SizedBox(height: 8),
+
+            const Text(
+
+              "Join MediConnect today",
+
+              style: TextStyle(
+
+                color: Colors.white70,
+
+                fontSize: 16,
 
               ),
 
@@ -271,18 +340,47 @@ class _SignupScreenState
 
             TextField(
 
-              controller:
-              nameController,
+              controller: nameController,
 
+              style: const TextStyle(
+                color: Colors.black,
+              ),
 
-              decoration:
-              const InputDecoration(
+              decoration: InputDecoration(
 
-                labelText:
-                "Name",
+                hintText: "Full Name",
 
-                border:
-                OutlineInputBorder(),
+                prefixIcon: const Icon(
+                  Icons.person,
+                  color: Colors.blue,
+                ),
+
+                filled: true,
+
+                fillColor: Colors.white,
+
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 18,
+                  horizontal: 20,
+                ),
+
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide.none,
+                ),
+
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide.none,
+                ),
+
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: const BorderSide(
+                    color: Colors.blue,
+                    width: 2,
+                  ),
+                ),
 
               ),
 
@@ -305,18 +403,47 @@ class _SignupScreenState
 
             TextField(
 
-              controller:
-              emailController,
+              controller: emailController,
 
+              style: const TextStyle(
+                color: Colors.black,
+              ),
 
-              decoration:
-              const InputDecoration(
+              decoration: InputDecoration(
 
-                labelText:
-                "Email",
+                hintText: "Email Address",
 
-                border:
-                OutlineInputBorder(),
+                prefixIcon: const Icon(
+                  Icons.email,
+                  color: Colors.blue,
+                ),
+
+                filled: true,
+
+                fillColor: Colors.white,
+
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 18,
+                  horizontal: 20,
+                ),
+
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide.none,
+                ),
+
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide.none,
+                ),
+
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: const BorderSide(
+                    color: Colors.blue,
+                    width: 2,
+                  ),
+                ),
 
               ),
 
@@ -341,21 +468,54 @@ class _SignupScreenState
 
             TextField(
 
-              controller:
-              passwordController,
+              controller: passwordController,
 
-              obscureText:
-              true,
+              obscureText: true,
 
+              style: const TextStyle(
+                color: Colors.black,
+              ),
 
-              decoration:
-              const InputDecoration(
+              decoration: InputDecoration(
 
-                labelText:
-                "Password",
+                hintText: "Password",
 
-                border:
-                OutlineInputBorder(),
+                prefixIcon: const Icon(
+                  Icons.lock,
+                  color: Colors.blue,
+                ),
+
+                suffixIcon: const Icon(
+                  Icons.visibility_off,
+                  color: Colors.grey,
+                ),
+
+                filled: true,
+
+                fillColor: Colors.white,
+
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 18,
+                  horizontal: 20,
+                ),
+
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide.none,
+                ),
+
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide.none,
+                ),
+
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: const BorderSide(
+                    color: Colors.blue,
+                    width: 2,
+                  ),
+                ),
 
               ),
 
@@ -388,18 +548,103 @@ class _SignupScreenState
               child:
               ElevatedButton(
 
-                onPressed:
-                signup,
+                onPressed: signup,
 
+                style: ElevatedButton.styleFrom(
 
-                child:
-                const Text(
+                  backgroundColor: const Color(0xff1565C0),
 
-                  "SIGN UP",
+                  foregroundColor: Colors.white,
+
+                  elevation: 8,
+
+                  shadowColor: Colors.blueAccent,
+
+                  minimumSize: const Size(
+                    double.infinity,
+                    58,
+                  ),
+
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+
+                ),
+
+                child: const Text(
+
+                  "CREATE ACCOUNT",
+
+                  style: TextStyle(
+
+                    fontSize: 18,
+
+                    fontWeight: FontWeight.bold,
+
+                    letterSpacing: 1,
+
+                  ),
 
                 ),
 
               ),
+
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+
+            Row(
+
+              mainAxisAlignment: MainAxisAlignment.center,
+
+              children: [
+
+                const Text(
+
+                  "Already have an account? ",
+
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+
+                ),
+
+                TextButton(
+
+                  onPressed: () {
+
+                    Navigator.pushReplacement(
+
+                      context,
+
+                      MaterialPageRoute(
+
+                        builder: (_) => const LoginScreen(),
+
+                      ),
+
+                    );
+
+                  },
+
+                  child: const Text(
+
+                    "LOGIN",
+
+                    style: TextStyle(
+
+                      color: Colors.white,
+
+                      fontWeight: FontWeight.bold,
+
+                    ),
+
+                  ),
+
+                ),
+
+              ],
 
             ),
 
@@ -407,10 +652,13 @@ class _SignupScreenState
 
           ],
 
+
+
         ),
-
-      ),
-
+              ),
+            ),
+        ),
+        ),
     );
 
   }

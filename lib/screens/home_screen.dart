@@ -617,7 +617,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
 
                   const Text(
-                    "👋 Welcome Back",
+                    "Good Afternoon 👋",
                     style: TextStyle(
                       color: Colors.white70,
                       fontSize: 17,
@@ -640,9 +640,26 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
 
                   const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.verified,
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                      const SizedBox(width: 6),
+                      const Text(
+                        "Verified Account",
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
 
                   const Text(
-                    "Find the best doctors near you.",
+                    "Book appointments with trusted doctors in seconds.",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 15,

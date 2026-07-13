@@ -44,31 +44,65 @@ class _DoctorDetailsScreenState
 
 
     return Card(
-
+      elevation: 5,
+      shadowColor: Colors.black12,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+      ),
       margin: const EdgeInsets.symmetric(
         horizontal: 16,
         vertical: 8,
       ),
-
-      color:
-      const Color(0xffFAEEFF),
+      color: Colors.white,
 
 
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 10,
+        ),
+
+        leading: Container(
+          width: 46,
+          height: 46,
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.blue.shade400,
+                  Colors.blue.shade700,
+                ],
+              ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(
+            icon,
+            color: Colors.white,
+            size: 24,
+          ),
+        ),
 
 
-      child:
-      ListTile(
+        title: Text(
+          title,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
 
-        leading:
-        Icon(icon),
 
-
-        title:
-        Text(title),
-
-
-        subtitle:
-        Text(value),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Text(
+            value,
+            style: TextStyle(
+              fontSize: 15,
+              color: Colors.grey.shade700,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
 
 
         trailing:
@@ -324,25 +358,23 @@ class _DoctorDetailsScreenState
 
     return Scaffold(
 
-
+        extendBodyBehindAppBar: false,
       backgroundColor:
       const Color(0xffF5F7FA),
 
 
       appBar:
       AppBar(
-
-        title:
-        Text(widget.doctor.name),
-
-
-        backgroundColor:
-        Colors.blue,
-
-
-        foregroundColor:
-        Colors.white,
-
+        elevation: 0,
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.black,
+        title: const Text(
+          "Doctor Profile",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
 
 
@@ -366,12 +398,28 @@ class _DoctorDetailsScreenState
 
 
 
-            CircleAvatar(
-              radius: 65,
-              backgroundImage: AssetImage(widget.doctor.image),
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: Colors.blue,
+                  width: 4,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.blue.withOpacity(0.25),
+                    blurRadius: 20,
+                    spreadRadius: 3,
+                  ),
+                ],
+              ),
+              child: CircleAvatar(
+                radius: 65,
+                backgroundImage: AssetImage(widget.doctor.image),
+              ),
             ),
 
-            const SizedBox(height: 18),
+            const SizedBox(height: 30),
 
             Text(
               widget.doctor.name,
