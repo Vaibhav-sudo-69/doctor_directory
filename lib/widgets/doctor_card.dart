@@ -35,7 +35,7 @@ class DoctorCard extends StatelessWidget {
         .collection("users")
         .doc(user.email)
         .collection("favorites")
-        .doc(doctor.email);
+        .doc(doctor.name);
 
 
     final fav =
@@ -169,13 +169,17 @@ class DoctorCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(18),
-                      child: Image.asset(
-                        doctor.image,
-                        width: 90,
-                        height: 90,
-                        fit: BoxFit.cover,
+                    child: Container(
+                      width: 75,
+                      height: 75,
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade50,
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                      child: const Icon(
+                        Icons.medical_services,
+                        size: 38,
+                        color: Colors.blue,
                       ),
                     ),
                   ),
@@ -233,11 +237,11 @@ class DoctorCard extends StatelessWidget {
 
                           child: Text(
                             doctor.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.3,
-                              color: Color(0xff1F2937),
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
 
@@ -246,44 +250,7 @@ class DoctorCard extends StatelessWidget {
 
 
 
-                        StreamBuilder(
 
-                          stream:
-                          FirebaseFirestore
-                              .instance
-                              .collection("users")
-                              .doc(user?.email)
-                              .collection("favorites")
-                              .doc(doctor.email)
-                              .snapshots(),
-
-
-
-                          builder:(context,snapshot){
-
-
-                            bool fav =
-                                snapshot.hasData &&
-                                    snapshot.data!.exists;
-
-
-                            return Container(
-                              decoration: BoxDecoration(
-                                color: Colors.red.shade50,
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              child: IconButton(
-                                icon: Icon(
-                                  fav ? Icons.favorite : Icons.favorite_border_rounded,
-                                  color: Colors.redAccent,
-                                ),
-                                onPressed: toggleFavorite,
-                              ),
-                            );
-
-                          },
-
-                        ),
 
 
                       ],
@@ -303,8 +270,8 @@ class DoctorCard extends StatelessWidget {
                           .instance
                           .collection("reviews")
                           .where(
-                        "doctorEmail",
-                        isEqualTo: doctor.email,
+                        "doctorName",
+                        isEqualTo: doctor.name,
                       )
                           .snapshots(),
 
@@ -466,7 +433,72 @@ class DoctorCard extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 14),
+                    Row(
+                      children: [
 
+                        Expanded(
+                          child: StreamBuilder<DocumentSnapshot>(
+                            stream: FirebaseFirestore.instance
+                                .collection("users")
+                                .doc(user?.email)
+                                .collection("favorites")
+                                .doc(doctor.name)
+                                .snapshots(),
+
+                            builder: (context, snapshot) {
+
+                              bool fav =
+                                  snapshot.hasData &&
+                                      snapshot.data!.exists;
+
+                              return SizedBox(
+                                height: 48,
+                                child: OutlinedButton.icon(
+
+                                  onPressed: toggleFavorite,
+
+                                  icon: Icon(
+                                    fav
+                                        ? Icons.favorite
+                                        : Icons.favorite_border,
+                                  ),
+
+                                  label: Text(
+                                    fav
+                                        ? "Favorited"
+                                        : "Favorite",
+                                  ),
+
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor:
+                                    fav ? Colors.red : Colors.blue,
+                                  ),
+
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+
+                        const SizedBox(width: 10),
+
+                        Expanded(
+                          child: SizedBox(
+                            height: 48,
+                          child: OutlinedButton.icon(
+                            onPressed: callDoctor,
+                            icon: const Icon(Icons.call),
+                            label: Text("Call Doctor"),
+                          ),
+                        ),
+                        ),
+
+                      ],
+                    ),
+
+                    const SizedBox(height: 14),
+
+/*
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
@@ -501,6 +533,7 @@ class DoctorCard extends StatelessWidget {
                         ),
                       ),
                     ),
+                    */
 
 
                   ],
@@ -516,31 +549,7 @@ class DoctorCard extends StatelessWidget {
 
 
 
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.green.shade400,
-                      Colors.green.shade700,
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.green.withOpacity(0.30),
-                      blurRadius: 10,
-                      offset: const Offset(0, 5),
-                    ),
-                  ],
-                ),
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.call_rounded,
-                    color: Colors.white,
-                  ),
-                  onPressed: callDoctor,
-                ),
-              ),
+
 
 
 

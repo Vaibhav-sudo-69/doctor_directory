@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'screens/upload_doctors_screen.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -6,7 +7,7 @@ import 'firebase_options.dart';
 import 'screens/login_screen.dart';
 import 'screens/splash_screen.dart';
 
-import 'data/user_data.dart';
+
 import 'data/doctor_data.dart';
 import 'data/appointment_data.dart';
 import 'data/doctor_request_data.dart';
@@ -24,7 +25,7 @@ void main() async {
 
 
   // old local data loading (keep for now)
-  await loadUser();
+
 
   await loadDoctors();
 

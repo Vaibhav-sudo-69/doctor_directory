@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'add_doctor_screen.dart';
 import 'manage_doctors_screen.dart';
 import 'doctor_requests_screen.dart';
+import 'login_screen.dart';
 
 class AdminPanelScreen extends StatelessWidget {
   const AdminPanelScreen({super.key});
@@ -486,8 +488,101 @@ child: SizedBox(),
                           "Logout",
                           Icons.logout,
                           Colors.red,
-                          () {
-                            Navigator.pop(context);
+                              () async {
+
+                            bool? logout = await showDialog<bool>(
+
+                              context: context,
+
+                              builder: (context) {
+
+                                return AlertDialog(
+
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+
+                                  title: const Row(
+                                    children: [
+
+                                      Icon(
+                                        Icons.logout,
+                                        color: Colors.red,
+                                      ),
+
+                                      SizedBox(width: 10),
+
+                                      Text("Logout"),
+
+                                    ],
+                                  ),
+
+                                  content: const Text(
+                                    "Are you sure you want to logout?",
+                                  ),
+
+                                  actions: [
+
+                                    TextButton(
+
+                                      onPressed: () {
+
+                                        Navigator.pop(context, false);
+
+                                      },
+
+                                      child: const Text("Cancel"),
+
+                                    ),
+
+                                    ElevatedButton(
+
+                                      style: ElevatedButton.styleFrom(
+
+                                        backgroundColor: Colors.red,
+
+                                        foregroundColor: Colors.white,
+
+                                      ),
+
+                                      onPressed: () {
+
+                                        Navigator.pop(context, true);
+
+                                      },
+
+                                      child: const Text("Logout"),
+
+                                    ),
+
+                                  ],
+
+                                );
+
+                              },
+
+                            );
+
+                            if (logout == true) {
+
+                              await FirebaseAuth.instance.signOut();
+
+                              Navigator.pushAndRemoveUntil(
+
+                                context,
+
+                                MaterialPageRoute(
+
+                                  builder: (_) => const LoginScreen(),
+
+                                ),
+
+                                    (route) => false,
+
+                              );
+
+                            }
+
                           },
                         ),
                       ],

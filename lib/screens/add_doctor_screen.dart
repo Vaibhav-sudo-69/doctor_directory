@@ -10,8 +10,6 @@ class AddDoctorScreen extends StatefulWidget {
 
 class _AddDoctorScreenState extends State<AddDoctorScreen> {
 final nameController = TextEditingController();
-final emailController = TextEditingController();
-final passwordController = TextEditingController();
 final specializationController = TextEditingController();
 final clinicController = TextEditingController();
 final phoneController = TextEditingController();
@@ -24,8 +22,6 @@ final locationController = TextEditingController();
 
 Future<void> addDoctor() async {
 if (nameController.text.isEmpty ||
-emailController.text.isEmpty ||
-passwordController.text.isEmpty ||
 specializationController.text.isEmpty ||
 clinicController.text.isEmpty ||
 phoneController.text.isEmpty ||
@@ -40,8 +36,9 @@ return;
 
 await FirebaseFirestore.instance.collection("doctors").add({
 "name": nameController.text.trim(),
-"email": emailController.text.trim(),
-"password": passwordController.text.trim(),
+  "email": "",
+  "password": "",
+  "isRegistered": false,
 "specialization": specializationController.text.trim(),
 "clinicName": clinicController.text.trim(),
 "phoneNumber": phoneController.text.trim(),
@@ -55,10 +52,13 @@ await FirebaseFirestore.instance.collection("doctors").add({
 "experience":
 int.tryParse(experienceController.text.trim()) ?? 0,
 "location": locationController.text.trim(),
-"image": "assets/doctor.png",
+  "image": "",
 "rating": 0.0,
 "reviews": [],
 "isFavorite": false,
+  "isVerified": true,
+  "isAvailable": true,
+  "createdBy": "admin",
 "createdAt": Timestamp.now(),
 });
 
@@ -108,17 +108,6 @@ Widget build(BuildContext context) {
             nameController,
           ),
 
-          inputBox(
-            "Doctor Email",
-            emailController,
-            keyboardType: TextInputType.emailAddress,
-          ),
-
-          inputBox(
-            "Password",
-            passwordController,
-            obscure: true,
-          ),
 
           inputBox(
             "Specialization",

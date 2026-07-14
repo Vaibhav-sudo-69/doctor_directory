@@ -222,7 +222,11 @@ Text(
 
               padding: const EdgeInsets.all(20),
 
-              child: Container(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: 450,
+                ),
+                child: Container(
 
                 padding: const EdgeInsets.all(25),
 
@@ -278,7 +282,7 @@ Text(
 
                     const Text(
 
-                      "MediConnect",
+                      "Welcome to MediConnect",
 
                       style: TextStyle(
 
@@ -297,7 +301,7 @@ Text(
 
                     const Text(
 
-                      "Your Health, Our Priority",
+                      "Find trusted doctors & book appointments instantly.",
 
                       style: TextStyle(
 
@@ -684,6 +688,7 @@ Text(
 
         ),
 
+      ),
       ),
 
     );

@@ -125,6 +125,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final user =
         FirebaseAuth.instance.currentUser;
+    final width = MediaQuery.of(context).size.width;
+    final isMobile = width < 600;
+    final isTablet = width >= 600 && width < 1000;
+    final isDesktop = width >= 1000;
 
 
     return Scaffold(
@@ -573,10 +577,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
       body:
+
       Padding(
+
+
 
         padding:
         const EdgeInsets.all(16),
+
 
 
         child:
@@ -592,7 +600,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(
+                isMobile ? 18 : 30,
+              ),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   begin: Alignment.topLeft,
@@ -610,17 +620,19 @@ class _HomeScreenState extends State<HomeScreen> {
                     offset: const Offset(0, 10),
                   ),
                 ],
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(
+                  isMobile ? 20 : 28,
+                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
 
-                  const Text(
+                   Text(
                     "Good Afternoon 👋",
                     style: TextStyle(
                       color: Colors.white70,
-                      fontSize: 17,
+                      fontSize: isMobile ? 17 : 22,
                       letterSpacing: 0.8,
                       fontWeight: FontWeight.w500,
                     ),
@@ -632,9 +644,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     user?.displayName?.isNotEmpty == true
                         ? user!.displayName!
                         : (user?.email?.split('@').first ?? "User"),
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white,
-                      fontSize: 28,
+                      fontSize: isMobile ? 28 : 38,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -658,11 +670,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
 
-                  const Text(
+                   Text(
                     "Book appointments with trusted doctors in seconds.",
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 15,
+                      fontSize: isMobile ? 15 : 18,
                     ),
                   ),
 
@@ -693,21 +705,27 @@ class _HomeScreenState extends State<HomeScreen> {
                           int pendingCount =
                               appointmentSnapshot.data?.docs.length ?? 0;
 
-                          return Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
+                          return Wrap(
+                            spacing: 15,
+                            runSpacing: 15,
                             children: [
 
-                              _statItem(
-                                Icons.local_hospital,
-                                "$doctorCount",
-                                "Doctors",
+                              SizedBox(
+                                width: isMobile ? width * 0.40 : 220,
+                                child: _statItem(
+                                  Icons.local_hospital,
+                                  "$doctorCount",
+                                  "Doctors",
+                                ),
                               ),
 
-                              _statItem(
-                                Icons.pending_actions,
-                                "$pendingCount",
-                                "Pending",
+                              SizedBox(
+                                width: isMobile ? width * 0.40 : 220,
+                                child: _statItem(
+                                  Icons.pending_actions,
+                                  "$pendingCount",
+                                  "Pending",
+                                ),
                               ),
 
                             ],
@@ -906,25 +924,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
                   return ListView.builder(
-
-                    itemCount:
-                    doctors.length,
-
-
-                    itemBuilder:(context,index){
-
-
-                      return DoctorCard(
-
-                        doctor:
-                        doctors[index],
-
+                    itemCount: doctors.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        child: DoctorCard(
+                          doctor: doctors[index],
+                        ),
                       );
-
-
                     },
-
-
                   );
 
 
@@ -941,6 +952,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
 
       ),
+
 
     );
 

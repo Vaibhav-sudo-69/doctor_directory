@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'login_screen.dart';
 import 'doctor_edit_profile_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 
 
@@ -102,7 +103,7 @@ class _DoctorPanelScreenState
 
     return Scaffold(
 
-
+      backgroundColor: const Color(0xffF5F7FA),
 
       appBar:
       AppBar(
@@ -166,22 +167,93 @@ class _DoctorPanelScreenState
               Icons.logout,
             ),
 
-            onPressed: () {
+            onPressed: () async {
 
-              Navigator.pushAndRemoveUntil(
+              bool? logout = await showDialog<bool>(
 
-                context,
+                context: context,
 
-                MaterialPageRoute(
+                builder: (context) {
 
-                  builder: (_) =>
-                  const LoginScreen(),
+                  return AlertDialog(
 
-                ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
 
-                    (route) => false,
+                    title: const Row(
+                      children: [
+                        Icon(
+                          Icons.logout,
+                          color: Colors.red,
+                        ),
+                        SizedBox(width: 10),
+                        Text("Logout"),
+                      ],
+                    ),
+
+                    content: const Text(
+                      "Are you sure you want to logout?",
+                    ),
+
+                    actions: [
+
+                      TextButton(
+
+                        onPressed: () {
+
+                          Navigator.pop(context, false);
+
+                        },
+
+                        child: const Text("Cancel"),
+
+                      ),
+
+                      ElevatedButton(
+
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          foregroundColor: Colors.white,
+                        ),
+
+                        onPressed: () {
+
+                          Navigator.pop(context, true);
+
+                        },
+
+                        child: const Text("Logout"),
+
+                      ),
+
+                    ],
+
+                  );
+
+                },
 
               );
+
+              if (logout == true) {
+
+                await FirebaseAuth.instance.signOut();
+
+                Navigator.pushAndRemoveUntil(
+
+                  context,
+
+                  MaterialPageRoute(
+
+                    builder: (_) => const LoginScreen(),
+
+                  ),
+
+                      (route) => false,
+
+                );
+
+              }
 
             },
 
@@ -200,6 +272,88 @@ class _DoctorPanelScreenState
 
 body: Column(
 children: [
+  Container(
+    margin: const EdgeInsets.fromLTRB(15, 15, 15, 5),
+    padding: const EdgeInsets.all(18),
+    decoration: BoxDecoration(
+      gradient: const LinearGradient(
+        colors: [
+          Color(0xff1565C0),
+          Color(0xff42A5F5),
+        ],
+      ),
+      borderRadius: BorderRadius.circular(20),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(.15),
+          blurRadius: 15,
+          offset: const Offset(0, 8),
+        ),
+      ],
+    ),
+    child: Row(
+      children: [
+
+        const CircleAvatar(
+          radius: 34,
+          backgroundColor: Colors.white,
+          child: Icon(
+            Icons.person,
+            size: 40,
+            color: Colors.blue,
+          ),
+        ),
+
+        const SizedBox(width: 15),
+
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+
+              Text(
+                widget.doctorData["name"] ?? "",
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(height: 6),
+
+              Text(
+                widget.doctorData["specialization"] ?? "",
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 15,
+                ),
+              ),
+
+              const SizedBox(height: 6),
+
+              Text(
+                widget.doctorData["clinicName"] ?? "",
+                style: const TextStyle(
+                  color: Colors.white70,
+                ),
+              ),
+
+              const SizedBox(height: 6),
+
+              Text(
+                widget.doctorData["phoneNumber"] ?? "",
+                style: const TextStyle(
+                  color: Colors.white70,
+                ),
+              ),
+
+            ],
+          ),
+        ),
+      ],
+    ),
+  ),
 
 StreamBuilder<QuerySnapshot>(
 stream: FirebaseFirestore.instance
@@ -222,21 +376,94 @@ count = snapshot.data!.docs.length;
 }
 
 return Container(
-width: double.infinity,
-margin: const EdgeInsets.all(12),
-padding: const EdgeInsets.all(15),
-decoration: BoxDecoration(
-color: Colors.blue,
-borderRadius: BorderRadius.circular(15),
-),
-child: Text(
-"🔔 Pending Requests: $count",
-style: const TextStyle(
-color: Colors.white,
-fontSize: 18,
-fontWeight: FontWeight.bold,
-),
-),
+  width: double.infinity,
+  margin: const EdgeInsets.symmetric(
+    horizontal: 15,
+    vertical: 10,
+  ),
+  padding: const EdgeInsets.all(18),
+  decoration: BoxDecoration(
+    gradient: const LinearGradient(
+      colors: [
+        Color(0xff1565C0),
+        Color(0xff42A5F5),
+      ],
+    ),
+    borderRadius: BorderRadius.circular(20),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black.withOpacity(.15),
+        blurRadius: 12,
+        offset: const Offset(0, 6),
+      ),
+    ],
+  ),
+  child: Row(
+    children: [
+
+      Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(.2),
+          shape: BoxShape.circle,
+        ),
+        child: const Icon(
+          Icons.notifications_active,
+          color: Colors.white,
+          size: 30,
+        ),
+      ),
+
+      const SizedBox(width: 15),
+
+      const Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+
+            Text(
+              "Pending Appointments",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            SizedBox(height: 4),
+
+            Text(
+              "Waiting for your response",
+              style: TextStyle(
+                color: Colors.white70,
+                fontSize: 13,
+              ),
+            ),
+
+          ],
+        ),
+      ),
+
+      Container(
+        height: 55,
+        width: 55,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Text(
+          "$count",
+          style: const TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Colors.blue,
+          ),
+        ),
+      ),
+
+    ],
+  ),
 );
 },
 ),
@@ -250,6 +477,26 @@ children: [
 
 ChoiceChip(
 label: const Text("All"),
+  selectedColor: const Color(0xff1565C0),
+
+  backgroundColor: Colors.white,
+
+  labelStyle: TextStyle(
+    color: selectedFilter == "All"
+        ? Colors.white
+        : Colors.black87,
+    fontWeight: FontWeight.w600,
+  ),
+
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(30),
+  ),
+
+  showCheckmark: false,
+
+  elevation: 2,
+
+  shadowColor: Colors.black26,
 selected: selectedFilter == "All",
 onSelected: (_) {
 setState(() {
@@ -262,6 +509,26 @@ const SizedBox(width: 8),
 
 ChoiceChip(
 label: const Text("Pending"),
+  selectedColor: const Color(0xff1565C0),
+
+  backgroundColor: Colors.white,
+
+  labelStyle: TextStyle(
+    color: selectedFilter == "All"
+        ? Colors.white
+        : Colors.black87,
+    fontWeight: FontWeight.w600,
+  ),
+
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(30),
+  ),
+
+  showCheckmark: false,
+
+  elevation: 2,
+
+  shadowColor: Colors.black26,
 selected: selectedFilter == "Pending",
 onSelected: (_) {
 setState(() {
@@ -274,6 +541,26 @@ const SizedBox(width: 8),
 
 ChoiceChip(
 label: const Text("Accepted"),
+  selectedColor: const Color(0xff1565C0),
+
+  backgroundColor: Colors.white,
+
+  labelStyle: TextStyle(
+    color: selectedFilter == "All"
+        ? Colors.white
+        : Colors.black87,
+    fontWeight: FontWeight.w600,
+  ),
+
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(30),
+  ),
+
+  showCheckmark: false,
+
+  elevation: 2,
+
+  shadowColor: Colors.black26,
 selected: selectedFilter == "Accepted",
 onSelected: (_) {
 setState(() {
@@ -338,53 +625,151 @@ builder: (context, snapshot) {
       final id = appointments[index].id;
 
       return Card(
-        margin: const EdgeInsets.all(10),
-        child: ListTile(
-          title: Text(data["patientName"] ?? ""),
-
-          subtitle: Column(
+        elevation: 6,
+        margin: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 8,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
 
-              Text("Phone: ${data["phoneNumber"]}"),
+              Row(
+                children: [
 
-              Text("Date: ${data["date"]}"),
+                  const CircleAvatar(
+                    radius: 24,
+                    backgroundColor: Color(0xffE3F2FD),
+                    child: Icon(
+                      Icons.person,
+                      color: Colors.blue,
+                    ),
+                  ),
 
-              Text("Time: ${data["time"]}"),
+                  const SizedBox(width: 12),
 
-              Text("Status: ${data["status"]}"),
+                  Expanded(
+                    child: Text(
+                      data["patientName"] ?? "",
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: data["status"] == "Pending"
+                          ? Colors.orange.shade100
+                          : data["status"] == "Accepted"
+                          ? Colors.green.shade100
+                          : Colors.red.shade100,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      data["status"],
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: data["status"] == "Pending"
+                            ? Colors.orange
+                            : data["status"] == "Accepted"
+                            ? Colors.green
+                            : Colors.red,
+                      ),
+                    ),
+                  ),
+
+                ],
+              ),
+
+              const SizedBox(height: 15),
+
+              Row(
+                children: [
+                  const Icon(Icons.phone,
+                      size: 18,
+                      color: Colors.blue),
+                  const SizedBox(width: 8),
+                  Text(data["phoneNumber"]),
+                ],
+              ),
+
+              const SizedBox(height: 8),
+
+              Row(
+                children: [
+                  const Icon(Icons.calendar_month,
+                      size: 18,
+                      color: Colors.blue),
+                  const SizedBox(width: 8),
+                  Text(data["date"]),
+                ],
+              ),
+
+              const SizedBox(height: 8),
+
+              Row(
+                children: [
+                  const Icon(Icons.access_time,
+                      size: 18,
+                      color: Colors.blue),
+                  const SizedBox(width: 8),
+                  Text(data["time"]),
+                ],
+              ),
+
+              if (data["status"] == "Pending") ...[
+                const SizedBox(height: 18),
+
+                Row(
+                  children: [
+
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          foregroundColor: Colors.white,
+                        ),
+                        onPressed: () {
+                          updateStatus(id, "Accepted");
+                        },
+                        icon: const Icon(Icons.check),
+                        label: const Text("Accept"),
+                      ),
+                    ),
+
+                    const SizedBox(width: 12),
+
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          foregroundColor: Colors.white,
+                        ),
+                        onPressed: () {
+                          updateStatus(id, "Rejected");
+                        },
+                        icon: const Icon(Icons.close),
+                        label: const Text("Reject"),
+                      ),
+                    ),
+
+                  ],
+                ),
+              ],
 
             ],
           ),
-
-          trailing: data["status"] == "Pending"
-              ? Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-
-              IconButton(
-                icon: const Icon(
-                  Icons.check,
-                  color: Colors.green,
-                ),
-                onPressed: () {
-                  updateStatus(id, "Accepted");
-                },
-              ),
-
-              IconButton(
-                icon: const Icon(
-                  Icons.close,
-                  color: Colors.red,
-                ),
-                onPressed: () {
-                  updateStatus(id, "Rejected");
-                },
-              ),
-
-            ],
-          )
-              : Text(data["status"]),
         ),
       );
     },

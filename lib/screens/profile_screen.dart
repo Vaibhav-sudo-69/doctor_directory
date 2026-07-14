@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'login_screen.dart';
+import 'about_screen.dart';
 
 
 
@@ -351,7 +352,35 @@ class ProfileScreen extends StatelessWidget {
 
 
 
+            const SizedBox(height: 10),
 
+            Card(
+              color: const Color(0xffFAEEFF),
+              child: ListTile(
+                leading: const Icon(
+                  Icons.info,
+                  color: Colors.blue,
+                ),
+                title: const Text(
+                  "About MediConnect",
+                ),
+                subtitle: const Text(
+                  "Version 1.0",
+                ),
+                trailing: const Icon(
+                  Icons.arrow_forward_ios,
+                  size: 18,
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const AboutScreen(),
+                    ),
+                  );
+                },
+              ),
+            ),
 
             const Spacer(),
 
